@@ -48,15 +48,20 @@
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
-            background: rgba(13, 17, 23, 0.8);
+            background: rgba(13, 17, 23, 0.9);
             padding: 10px 20px;
             border-radius: 10px;
-            border: 1px solid #30363d;
+            border: 2px solid #EA7900;
             z-index: 200;
             pointer-events: none;
         }
 
-        .time { font-size: 5vmin; font-weight: bold; color: #58a6ff; }
+        .time { 
+            font-size: 5vmin; 
+            font-weight: bold; 
+            color: #EA7900; 
+            text-shadow: 0 0 10px rgba(234, 121, 0, 0.3);
+        }
         .date { font-size: 2vmin; color: #8b949e; text-transform: uppercase; }
 
         .center-sun {
@@ -75,7 +80,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             border-radius: 50%;
-            border: 1px solid rgba(88, 166, 255, 0.08);
+            border: 1px solid rgba(88, 166, 255, 0.05);
         }
 
         .planet-marker { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); }
@@ -120,6 +125,16 @@
         .m-col { color: #8b949e; } .v-col { color: #d2a8ff; } .e-col { color: #58a6ff; }
         .ma-col { color: #ff7b72; } .j-col { color: #ffa657; } .s-col { color: #f2cc60; }
         .u-col { color: #70e2ff; } .n-col { color: #4d7fff; } .nib-col { color: #ff4500; font-size: 3vmin; }
+
+        .zodiac-sign {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 2.5vmin;
+            color: rgba(88, 166, 255, 0.05);
+            top: 0; left: 0; padding-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -156,14 +171,11 @@
 <script>
     let scale = 0.8, posX = 0, posY = 0;
     let lastPinchDist = 0, isDragging = false, lastX = 0, lastY = 0;
-
     const clock = document.getElementById('clock');
     const scene = document.getElementById('scene');
-
     function updateTransform() {
         clock.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
     }
-
     scene.addEventListener('touchstart', e => {
         if (e.touches.length === 1) {
             isDragging = true;
@@ -173,7 +185,6 @@
             lastPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
         }
     });
-
     scene.addEventListener('touchmove', e => {
         if (e.touches.length === 1 && isDragging) {
             posX = e.touches[0].clientX - lastX;
@@ -186,14 +197,19 @@
         }
         updateTransform();
     });
-
     scene.addEventListener('touchend', () => { isDragging = false; });
-    
     scene.addEventListener('dblclick', () => {
         scale = 0.8; posX = 0; posY = 0;
         updateTransform();
     });
-
+    const zodiacs = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+    zodiacs.forEach((symbol, i) => {
+        const sign = document.createElement('div');
+        sign.className = 'zodiac-sign';
+        sign.style.transform = `rotate(${i * 30}deg)`;
+        sign.innerText = symbol;
+        clock.appendChild(sign);
+    });
     const planets = [
         { id: 'mercury', period: 87.97 }, { id: 'venus', period: 224.7 },
         { id: 'earth', period: 365.25 }, { id: 'mars', period: 686.98 },
@@ -201,7 +217,6 @@
         { id: 'uranus', period: 30688.5 }, { id: 'neptune', period: 60182 }
     ];
     const specials = [{ id: 'halley', period: 27392 }, { id: 'nibiru', period: 800000 }];
-
     const starsContainer = document.getElementById('stars-container');
     for (let i = 0; i < 150; i++) {
         const star = document.createElement('div');
@@ -212,7 +227,6 @@
         star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
         starsContainer.appendChild(star);
     }
-
     const belt = document.getElementById('asteroid-belt');
     for (let i = 0; i < 100; i++) {
         const ast = document.createElement('div');
@@ -225,13 +239,11 @@
         ast.dataset.speed = (Math.random() * 0.004 + 0.001);
         belt.appendChild(ast);
     }
-
     function update() {
         const now = new Date();
         document.getElementById('timeDisplay').innerText = now.toLocaleTimeString('es-ES', { hour12: false });
         document.getElementById('dateDisplay').innerText = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
         const days = (now.getTime() / 86400000) + 2440587.5;
-
         planets.forEach(p => {
             const orbit = document.getElementById(p.id);
             const rot = (days / p.period * 360) % 360;
@@ -242,21 +254,18 @@
                 document.getElementById('moon-orbit').style.transform = `translate(-50%, -50%) rotate(${mRot}deg)`;
             }
         });
-
         specials.forEach(s => {
             const orbit = document.getElementById(s.id);
             const rot = (days / s.period * 360) % 360;
             orbit.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
             orbit.querySelector('i').style.transform = `rotate(${-rot}deg)`;
         });
-
         document.querySelectorAll('.asteroid').forEach(ast => {
             let a = parseFloat(ast.dataset.angle) + parseFloat(ast.dataset.speed);
             ast.dataset.angle = a;
             ast.style.left = `calc(50% + ${Math.cos(a) * ast.dataset.dist}%)`;
             ast.style.top = `calc(50% + ${Math.sin(a) * ast.dataset.dist}%)`;
         });
-
         requestAnimationFrame(update);
     }
     updateTransform();
@@ -264,4 +273,3 @@
 </script>
 </body>
 </html>
-
