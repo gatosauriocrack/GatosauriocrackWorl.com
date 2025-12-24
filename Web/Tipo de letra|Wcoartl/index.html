@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizador de Fuentes Wcoartl</title>
+    <style>
+        @font-face {
+            font-family: 'Wcoartl';
+            src: url('Wcoartl_simbolos.otf') format('opentype');
+            unicode-range: U+00B0, U+00AE, U+00A9, U+2206, U+2122;
+        }
+
+        @font-face {
+            font-family: 'Wcoartl';
+            src: url('Wcoartl.otf') format('opentype');
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: sans-serif;
+            padding: 40px;
+        }
+
+        .contenedor {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+
+        .fuentes {
+            font-family: 'Wcoartl', sans-serif !important;
+            font-size: 3rem;
+            color: #ff9d00;
+            line-height: 1.5;
+            word-wrap: break-word;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        h2 {
+            color: #aaa;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .etiqueta {
+            font-size: 0.9rem;
+            color: #777;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tipo de letra: Wcoartl</h1>
+    <p>Archivos usados:<b>Wcoartl.otf</b> y <b>Wcoartl_simbolos.otf</b> estén en esta misma carpeta.</p>
+
+    <div class="contenedor">
+        <h2>Símbolos Especiales Wcoartl</h2>
+        <div class="fuentes">
+            ° ® © ™
+        </div>
+
+        <h2>Abecedario Mayúsculas</h2>
+        <div class="fuentes">
+            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+        </div>
+
+        <h2>Abecedario Minúsculas</h2>
+        <div class="fuentes">
+            a b c d e f g h i j k l m n o p q r s t u v w x y z
+        </div>
+
+        <h2>Números y Signos</h2>
+        <div class="fuentes">
+            0 1 2 3 4 5 6 7 8 9 ! ? @ # $ % & *
+        </div>
+
+        <h2>Ejemplo de Título</h2>
+        <div class="fuentes">
+            °Wcoartl®
+        </div>
+    </div>
+
+</body>
+</html>
