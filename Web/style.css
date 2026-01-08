@@ -358,10 +358,10 @@ body {
 .welcome-section {
     width: 100%;
     max-width: 800px;
-    background-color: var(--color-fondo-claro-menu);
+    background-color: transparent;
     padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    border-radius: 0;
+    box-shadow: none;
     margin-bottom: 30px;
     text-align: left;
 }
@@ -371,7 +371,7 @@ body {
     align-items: center;
     justify-content: flex-start;
     padding-bottom: 10px;
-    border-bottom: 2px solid var(--color-naranja-fuerte);
+    border-bottom: none;
     margin-bottom: 15px;
 }
 
@@ -393,7 +393,7 @@ body {
     font-size: 1.5em;
     margin-top: 20px;
     margin-bottom: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
     padding-top: 15px;
 }
 
@@ -1203,38 +1203,34 @@ input[type="file"] {
     display: block;
 }
 
+/* --- MODIFICACIÓN DEL MARCO DEL GIF --- */
 #meliGifContainer {
     position: fixed;
-    right: 20px;
     bottom: 20px;
+    right: 20px;
     z-index: 1050;
-    width: 150px;
-    background-color: var(--color-fondo-claro-menu);
-    border: 3px solid var(--color-naranja-principal);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     display: none;
-    flex-direction: column;
-    align-items: center;
     cursor: pointer;
-    transition: transform 0.2s;
+    padding: 0;
+    margin: 0;
+    background-color: transparent; /* Fondo eliminado */
+    border: none;                  /* Borde naranja eliminado */
+    box-shadow: none;              /* Sombra eliminada */
+    overflow: visible;             /* Para que no corte el gif */
 }
 
-#meliGifContainer:hover {
-    transform: scale(1.05);
+#meliGif {
+    width: 80px;
+    height: auto;
+    border-radius: 0;              /* Sin redondeo de marco */
+    box-shadow: none;              /* Sin sombra en la imagen */
+    background: transparent;
 }
 
-#meliTimer {
-    width: 100%;
-    background-color: var(--color-naranja-fuerte);
-    color: white;
-    text-align: center;
-    padding: 5px 0;
-    font-size: 0.85em;
-    font-weight: bold;
-    border-top: 1px solid var(--color-naranja-principal);
+#meliTimer, #meliGifContainer > #localClock {
+    display: none !important;      /* Oculta el temporizador y reloj extra */
 }
+/* -------------------------------------- */
 
 @media (max-width: 600px) {
     #meliGifInline {
@@ -1336,28 +1332,6 @@ input[type="file"] {
     font-weight: normal;
     white-space: nowrap;
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-}
-
-#meliGifContainer {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: none;
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-}
-
-#meliTimer, #meliGifContainer > #localClock {
-    display: none !important;
-}
-
-#meliGif {
-    width: 80px;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .header-bar {
