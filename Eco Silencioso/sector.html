@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#000;margin:0;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;border:1px solid #111;">
+    <div id="ui" style="color:#111;font-family:monospace;font-size:10px;">Cargando...</div>
+    <script>
+        const bc = new BroadcastChannel('game_sync');
+        const urlParams = new URLSearchParams(window.location.search);
+        const sectorId = urlParams.get('id');
+        const keys = JSON.parse(decodeURIComponent(urlParams.get('keys')));
+
+        document.getElementById('ui').innerText = `SEC_0${sectorId}`;
+
+        window.addEventListener('deviceorientation', (e) => {
+            let angle = e.alpha || 0; 
+            let near = false;
+            keys.forEach(k => {
+                let diff = Math.abs(angle - k.angle);
+                if(diff < 20 || diff > 340) near = true;
+            });
+
+            if(near) {
+                document.body.style.background = '#0a0a0a';
+                bc.postMessage({type: 'FOUND_NEAR', sector: sectorId});
+            } else {
+                document.body.style.background = '#000';
+            }
+        });
+    </script>
+</body>
+</html>
