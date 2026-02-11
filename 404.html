@@ -65,11 +65,33 @@
             outline: none;
             display: block;
         }
+        
+        @font-face {
+            font-family: 'Wcoartl-Principal';
+            src: url('Web/otf/Wcoartl.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+         }
+
+        @font-face {
+            font-family: 'Wcoartl-Simbolos';
+            src: url('Web/otf/Wcoartl_simbolos.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+         }
+
+         h1 {
+           font-family: 'Wcoartl-Principal', 'Wcoartl-Simbolos', 'FontAwesome-Gatosauriocrack', sans-serif;
+           font-size: 3rem;
+           margin: 10px 0;
+         }
+
     </style>
 </head>
 <body id="background">
 
     <section class="top-bar" >
+    	<h1>GatosauriocrackWorl</h1>
     <i class="icon-meli-icono"></i>
     </section>
 
