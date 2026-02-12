@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página no encontrada</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @font-face {
+            font-family: 'FontAwesome-Gatosauriocrack';
+            src: url('Web/fonts/FontAwesome-Gatosauriocrack.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Wcoartl-Principal';
+            src: url('Web/otf/Wcoartl.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'Wcoartl-Simbolos';
+            src: url('Web/otf/Wcoartl_simbolos.otf') format('opentype');
+        }
+
+        [class^="icon-"], [class*=" icon-"] {
+            font-family: 'FontAwesome-Gatosauriocrack' !important;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .icon-meli-icono:before { 
+            content: "\e900"; 
+            font-size: 90px; 
+            color: #000000;
+        }
+
+        .top-bar {
+            background-color: #EA7900;
+            height: 70px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Wcoartl-Principal', 'Wcoartl-Simbolos', 'FontAwesome-Gatosauriocrack', sans-serif;
+            font-size: 2rem;
+            color: #000000;
+            margin: 0;
+            line-height: 70px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        img {
+            width: 100vw;
+            height: calc(100vh - 70px);
+            object-fit: contain;
+        }
+
+        .btn-regreso {
+            position: absolute;
+            bottom: 20px;
+            color: #EA7900; 
+            text-decoration: none; 
+            font-family: 'Wcoartl-Principal', sans-serif; 
+            font-size: 1rem; 
+            font-weight: bold;
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+    </style>
+</head>
+<body id="background">
+
+    <header class="top-bar">
+        <i class="icon-meli-icono"></i>
+        <h1>GatosauriocrackWorl</h1>
+    </header>
+
+    <div class="main-content">
+        <img id="random-img" src="" alt="404">
+        
+        <a href="https://gatosauriocrackworl.com" class="btn-regreso">
+            regresa a la Página Principal ←
+        </a>
+    </div>
+
+    <script>
+        const totalFotos = 7;
+        const numeroAleatorio = Math.floor(Math.random() * totalFotos) + 1;
+        document.getElementById('random-img').src = `404png/${numeroAleatorio}.png`;
+
+        const colores = ['#FFFFFF', '#000000'];
+        const colorFinal = colores[Math.floor(Math.random() * colores.length)];
+        document.getElementById('background').style.backgroundColor = colorFinal;
+    </script>
+
+</body>
+</html>
