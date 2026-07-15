@@ -54,7 +54,9 @@
                 querySnapshot.forEach((doc, index) => {
                     const data = doc.data();
                     const row = tbody.insertRow();
-                    row.innerHTML = `<td>${index + 1}</td><td>${data.username}</td><td class="score-cell">${data.score}</td><td class="time-cell">${data.timeFormatted}</td><td class="date-cell">${data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A'}</td>`;
+                    row.innerHTML = `<td>${index + 1}</td><td>${data.username}</td><td class="score-cell">${data.score}</td><td class="time-cell">${data.timeFormatted || 'N/A'}</td><td class="date-cell">${data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A'}</td>`;
+row.innerHTML = `<td>${index + 1}</td><td>${data.username}</td><td class="score-cell">${data.score}</td><td class="time-cell">${data.timeFormatted || 'N/A'}</td><td class="date-cell">${data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A'}</td>`;
+
                 });
             } catch (error) {
                 messageElement.textContent = "Error al cargar: asegúrate de haber creado el índice en Firebase.";
