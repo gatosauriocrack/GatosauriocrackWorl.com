@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏆 Tabla de Récords Globales - Snake</title>
-    
     <link rel="icon" type="image/png" href="snake.png">
     <link rel="apple-touch-icon" href="snake.png">
     <link rel="shortcut icon" href="snake.png">
-
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
@@ -175,19 +173,20 @@
             </tr>
         </thead>
         <tbody>
-            </tbody>
+        </tbody>
     </table>
     <p id="returnButtonContainer" style="margin-top: 20px; display:none;">
         <a href="https://gatosauriocrackworl.com/snake" style="color: var(--color-naranja-principal); text-decoration: none; font-weight: bold;">← Volver al juego</a>
     </p>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBcAqXK3qFD8j1T7h6cjO0U3d5nBoVAgVk",
-            authDomain: "procesador-56b7a.firebaseapp.com",
-            projectId: "procesador-56b7a",
-            storageBucket: "procesador-56b7a.firebasestorage.app",
-            messagingSenderId: "1029072924025",
-            appId: "1:1029072924025:web:c32d735e453416ecfd93a8"
+            apiKey: "AIzaSyBw4Gpq94uUunO5tmuKyJAH6mmMEqvP1j4",
+            authDomain: "bikot-worl.firebaseapp.com",
+            databaseURL: "https://bikot-worl-default-rtdb.firebaseio.com",
+            projectId: "bikot-worl",
+            storageBucket: "bikot-worl.firebasestorage.app",
+            messagingSenderId: "197140262797",
+            appId: "1:197140262797:web:4a03ac108230694ea9d7c4"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -273,7 +272,7 @@
                 console.error("Error al obtener récords de Firestore:", error);
                 let displayError = error.message;
                 if (error.code === 'failed-precondition') {
-                    displayError = `⚠️ La clasificación falló. Debes crear el índice compuesto en Firestore. Abre la consola de desarrollador y haz clic en el enlace de error para crearlo.`;
+                    displayError = `⚠️ La clasificación falló. Debes crear el índice compuesto en Firestore.`;
                 }
                 messageElement.textContent = displayError;
             }
