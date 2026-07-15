@@ -1,6 +1,6 @@
 const firebaseConfig = {
     apiKey: "AIzaSyBw4Gpq94uUunO5tmuKyJAH6mmMEqvP1j4",
-    authDomain: "bikot-worl.firebaseapp.com",
+    authDomain: "gatosauriocrackworl.com",
     databaseURL: "https://bikot-worl-default-rtdb.firebaseio.com",
     projectId: "bikot-worl",
     storageBucket: "bikot-worl.firebasestorage.app",
