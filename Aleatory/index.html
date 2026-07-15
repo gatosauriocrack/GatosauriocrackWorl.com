@@ -120,15 +120,24 @@
         function formatTime(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
         function startTimer() { if(!timerInterval) timerInterval = setInterval(() => { gameTimeSeconds++; document.getElementById('timer').textContent = formatTime(gameTimeSeconds); }, 1000); }
         function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
+        
+        // Función modificada para incluir tiempo
         async function saveRecord(s, t) {
             const user = auth.currentUser;
             const ref = db.collection("leaderboard_aleatory_game").doc(user.uid);
             const doc = await ref.get();
             if (!doc.exists || s > doc.data().score) {
-                await ref.set({ username: user.displayName || user.email.split('@')[0], score: s, timestamp: FieldValue.serverTimestamp() }, { merge: true });
+                await ref.set({ 
+                    username: user.displayName || user.email.split('@')[0], 
+                    score: s, 
+                    timeSeconds: t, 
+                    timeFormatted: formatTime(t), 
+                    timestamp: FieldValue.serverTimestamp() 
+                }, { merge: true });
                 recordStatus.textContent = '¡NUEVO RÉCORD!';
             }
         }
+        
         function loseGame() {
             stopTimer();
             document.getElementById('feedbackText').innerHTML = `${score} puntos`;
