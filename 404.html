@@ -13,21 +13,22 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background-color: #000000;
         }
 
         @font-face {
             font-family: 'FontAwesome-Gatosauriocrack';
-            src: url('/Web/fonts/FontAwesome-Gatosauriocrack.ttf') format('truetype');
+            src: url('https://oc.gatosauriocrackworl.com/fonts/FontAwesome-Gatosauriocrack.ttf') format('truetype');
         }
 
         @font-face {
             font-family: 'Wcoartl-Principal';
-            src: url('/Web/otf/Wcoartl.otf') format('opentype');
+            src: url('https://oc.gatosauriocrackworl.com/otf/Wcoartl.otf') format('opentype');
         }
 
         @font-face {
             font-family: 'Wcoartl-Simbolos';
-            src: url('/Web/otf/Wcoartl_simbolos.otf') format('opentype');
+            src: url('https://oc.gatosauriocrackworl.com/otf/Wcoartl_simbolos.otf') format('opentype');
         }
 
         [class^="icon-"], [class*=" icon-"] {
@@ -57,10 +58,10 @@
         }
 
         h1 {
-            font-family: 'Wcoartl-Principal', 'Wcoartl-Simbolos', 'FontAwesome-Gatosauriocrack', sans-serif;
-            font-size: 2rem;
+            font-family: 'Wcoartl-Principal', sans-serif;
+            font-size: 1.8rem;
             color: #000000;
-            margin: 0;
+            margin: 0 15px;
             line-height: 70px;
         }
 
@@ -74,26 +75,29 @@
         }
 
         img {
-            width: 100vw;
-            height: calc(100vh - 70px);
+            max-width: 100%;
+            max-height: calc(100vh - 120px);
             object-fit: contain;
         }
 
         .btn-regreso {
             position: absolute;
-            bottom: 20px;
+            bottom: 30px;
             color: #EA7900; 
             text-decoration: none; 
             font-family: 'Wcoartl-Principal', sans-serif; 
-            font-size: 1rem; 
+            font-size: 1.2rem; 
             font-weight: bold;
-            background-color: transparent;
-            padding: 0;
-            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-regreso:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
         }
     </style>
 </head>
-<body id="background">
+<body>
 
     <header class="top-bar">
         <i class="icon-meli-icono"></i>
@@ -111,13 +115,8 @@
     <script>
         const totalFotos = 7;
         const numeroAleatorio = Math.floor(Math.random() * totalFotos) + 1;
-        document.getElementById('random-img').src = `404png/${numeroAleatorio}.png`;
-
-        const colores = ['#FFFFFF', '#000000'];
-        const colorFinal = colores[Math.floor(Math.random() * colores.length)];
-        document.getElementById('background').style.backgroundColor = colorFinal;
+        document.getElementById('random-img').src = `https://gatosauriocrackworl.com/404png/${numeroAleatorio}.png`;
     </script>
 
 </body>
 </html>
-
