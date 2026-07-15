@@ -1,286 +1,802 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nuestra galaxia - Gatosauriocrack</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sistema Solar 3D · Tiempo Real</title>
+<style>
+  :root{
+    --bg:#03040a;
+    --panel:#0a0e1a;
+    --panel-border:rgba(120,160,255,0.15);
+    --text:#dfe6f5;
+    --dim:#7c88a8;
+    --accent:#ffb454;
+    --accent2:#5ad1ff;
+    --font-ui:'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+    --font-mono:'Consolas', 'SFMono-Regular', Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; width:100%; height:100%; overflow:hidden;
+    background:var(--bg); color:var(--text); font-family:var(--font-ui);
+  }
+  #canvas-container{position:fixed; inset:0;}
+  canvas{display:block; touch-action:none;}
 
-    <link rel="icon" type="image/png" href="Gatoworl.png">
-    <link rel="apple-touch-icon" href="Gatoworl.png">
-    <link rel="shortcut icon" href="Gatoworl.png">
+  #hud-top{
+    position:fixed; top:0; left:0; right:0;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:14px 18px; pointer-events:none; z-index:10;
+    gap:10px; flex-wrap:wrap;
+  }
+  #title-block{pointer-events:none;}
+  #title-block h1{
+    margin:0; font-size:15px; letter-spacing:3px; font-weight:600;
+    text-transform:uppercase; color:var(--text);
+  }
+  #title-block .sub{
+    font-size:11px; color:var(--dim); letter-spacing:1px; margin-top:2px;
+  }
+  #clock-box{
+    pointer-events:auto;
+    background:rgba(10,14,26,0.72); backdrop-filter:blur(10px);
+    border:1px solid var(--panel-border); border-radius:10px;
+    padding:10px 14px; font-family:var(--font-mono); font-size:12px;
+    color:var(--accent2); min-width:190px; text-align:right;
+  }
+  #clock-box .date-line{color:var(--text); font-size:13px; margin-bottom:2px;}
+  #clock-box .mode-line{color:var(--dim); font-size:10px; letter-spacing:1px;}
 
-    <meta property="og:title" content="Nuestra galaxia - Gatosauriocrack">
-    <meta property="og:description" content="Explora el sistema solar en tiempo real con este reloj cósmico interactivo.">
-    <meta property="og:image" content="https://gatosauriocrackworl.com/Gatoworl.png">
-    <meta property="og:url" content="https://gatosauriocrackworl.com/galaxia">
+  #controls{
+    position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+    z-index:10; display:flex; align-items:center; gap:14px;
+    background:rgba(10,14,26,0.72); backdrop-filter:blur(10px);
+    border:1px solid var(--panel-border); border-radius:14px;
+    padding:10px 18px; font-size:12px; color:var(--dim);
+    max-width:92vw; flex-wrap:wrap; justify-content:center;
+  }
+  #controls .grp{display:flex; align-items:center; gap:8px;}
+  #controls button{
+    background:rgba(255,255,255,0.06); border:1px solid var(--panel-border);
+    color:var(--text); border-radius:8px; padding:6px 10px; cursor:pointer;
+    font-family:var(--font-ui); font-size:12px; transition:background .15s;
+  }
+  #controls button:hover{background:rgba(255,255,255,0.14);}
+  #controls button.active{background:var(--accent); color:#1a1206; border-color:var(--accent);}
+  #speedRange{width:120px; accent-color:var(--accent2);}
+  #controls label{font-size:11px; color:var(--dim); letter-spacing:.5px;}
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background-color: #05070a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            color: #e6edf3;
-            overflow: hidden;
-            touch-action: none;
-        }
+  #planet-label{
+    position:fixed; z-index:20; pointer-events:none;
+    background:rgba(8,12,22,0.92); border:1px solid rgba(255,180,84,0.4);
+    border-radius:10px; padding:12px 16px; min-width:220px; max-width:260px;
+    font-size:12px; color:var(--text); opacity:0; transform:translate(-50%,-115%) scale(.95);
+    transition:opacity .18s ease, transform .18s ease;
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  }
+  #planet-label.show{opacity:1; transform:translate(-50%,-125%) scale(1);}
+  #planet-label h2{
+    margin:0 0 6px 0; font-size:15px; letter-spacing:1px; color:var(--accent);
+    text-transform:uppercase;
+  }
+  #planet-label .row{display:flex; justify-content:space-between; padding:2px 0; border-top:1px solid rgba(255,255,255,0.06);}
+  #planet-label .row span:first-child{color:var(--dim);}
+  #planet-label .desc{margin-top:8px; color:var(--dim); font-size:11px; line-height:1.4;}
+  #planet-label .close-hint{margin-top:8px; font-size:10px; color:#4a5570; text-align:right;}
 
-        #stars-container { position: absolute; width: 100%; height: 100%; z-index: 0; }
-        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: blink var(--duration) infinite; }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+  #loader{
+    position:fixed; inset:0; background:var(--bg); z-index:100;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; transition:opacity .6s ease;
+  }
+  #loader .ring{
+    width:46px; height:46px; border-radius:50%;
+    border:2px solid rgba(255,180,84,0.15); border-top-color:var(--accent);
+    animation:spin 1s linear infinite;
+  }
+  #loader .txt{font-family:var(--font-mono); font-size:11px; letter-spacing:3px; color:var(--dim); text-transform:uppercase;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 
-        #scene {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-        }
+  #info-btn{
+    pointer-events:auto; width:30px;height:30px;border-radius:50%;
+    background:rgba(255,255,255,0.06); border:1px solid var(--panel-border);
+    color:var(--dim); cursor:pointer; font-size:13px; margin-left:8px;
+  }
 
-        .cosmic-clock {
-            position: relative;
-            width: 90vmax;
-            height: 90vmax;
-            border-radius: 50%;
-            border: 1px solid rgba(48, 54, 61, 0.3);
-            will-change: transform;
-        }
-
-        .digital-clock {
-            position: absolute;
-            top: env(safe-area-inset-top, 20px);
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            background: rgba(13, 17, 23, 0.9);
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 2px solid #EA7900;
-            z-index: 200;
-            pointer-events: none;
-        }
-
-        .time { 
-            font-size: 5vmin; 
-            font-weight: bold; 
-            color: #EA7900; 
-            text-shadow: 0 0 10px rgba(234, 121, 0, 0.3);
-        }
-        .date { font-size: 2vmin; color: #8b949e; text-transform: uppercase; }
-
-        .center-sun {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 6vmin;
-            color: #ffd700;
-            text-shadow: 0 0 20px #ffd700;
-        }
-
-        .orbital-path {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            border: 1px solid rgba(88, 166, 255, 0.05);
-        }
-
-        .planet-marker { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); }
-        .planet-icon { font-size: 2.5vmin; }
-
-        .moon-orbit {
-            position: absolute;
-            width: 5vmin;
-            height: 5vmin;
-            top: 0;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .moon {
-            position: absolute;
-            width: 0.8vmin;
-            height: 0.8vmin;
-            background: #d1d1d1;
-            border-radius: 50%;
-            top: 0;
-            left: 50%;
-        }
-
-        #asteroid-belt { position: absolute; top: 50%; left: 50%; width: 50%; height: 50%; transform: translate(-50%, -50%); }
-        .asteroid { position: absolute; background-color: #8b949e; border-radius: 50%; opacity: 0.4; }
-
-        .comet-orbit { position: absolute; top: 50%; left: 50%; border: 1px dashed rgba(255, 255, 255, 0.05); border-radius: 50%; }
-        .comet-marker { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); }
-        .comet-head { font-size: 1.5vmin; color: #fff; text-shadow: 0 0 8px #58a6ff; }
-
-        #mercury { width: 18%; height: 18%; }
-        #venus { width: 26%; height: 26%; }
-        #earth { width: 34%; height: 34%; }
-        #mars { width: 42%; height: 42%; }
-        #jupiter { width: 58%; height: 58%; }
-        #saturn { width: 68%; height: 68%; }
-        #uranus { width: 78%; height: 78%; }
-        #neptune { width: 88%; height: 88%; }
-        #nibiru { width: 115%; height: 45%; }
-
-        .m-col { color: #8b949e; } .v-col { color: #d2a8ff; } .e-col { color: #58a6ff; }
-        .ma-col { color: #ff7b72; } .j-col { color: #ffa657; } .s-col { color: #f2cc60; }
-        .u-col { color: #70e2ff; } .n-col { color: #4d7fff; } .nib-col { color: #ff4500; font-size: 3vmin; }
-
-        .zodiac-sign {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            font-size: 2.5vmin;
-            color: rgba(88, 166, 255, 0.05);
-            top: 0; left: 0; padding-top: 10px;
-        }
-    </style>
+  @media (max-width:640px){
+    #title-block h1{font-size:12px; letter-spacing:2px;}
+    #clock-box{min-width:150px; padding:8px 10px; font-size:10.5px;}
+    #controls{gap:8px; padding:8px 12px;}
+    #controls .grp{gap:5px;}
+    #speedRange{width:80px;}
+    #planet-label{min-width:180px; max-width:210px; font-size:11px;}
+  }
+</style>
 </head>
 <body>
 
-<div id="stars-container"></div>
-
-<div class="digital-clock">
-    <div class="time" id="timeDisplay">00:00:00</div>
-    <div class="date" id="dateDisplay">---, 00 ---</div>
+<div id="loader">
+  <div class="ring"></div>
+  <div class="txt">Calculando efemérides…</div>
 </div>
 
-<div id="scene">
-    <div class="cosmic-clock" id="clock">
-        <i class="center-sun fas fa-sun"></i>
-        <div class="orbital-path" id="mercury"><div class="planet-marker"><i class="planet-icon m-col fas fa-circle"></i></div></div>
-        <div class="orbital-path" id="venus"><div class="planet-marker"><i class="planet-icon v-col fas fa-venus"></i></div></div>
-        <div class="orbital-path" id="earth">
-            <div class="planet-marker">
-                <i class="planet-icon e-col fas fa-globe-americas"></i>
-                <div class="moon-orbit" id="moon-orbit"><div class="moon"></div></div>
-            </div>
-        </div>
-        <div class="orbital-path" id="mars"><div class="planet-marker"><i class="planet-icon ma-col fas fa-mars"></i></div></div>
-        <div id="asteroid-belt"></div>
-        <div class="orbital-path" id="jupiter"><div class="planet-marker"><i class="planet-icon j-col fas fa-circle"></i></div></div>
-        <div class="orbital-path" id="saturn"><div class="planet-marker"><i class="planet-icon s-col fas fa-ring"></i></div></div>
-        <div class="orbital-path" id="uranus"><div class="planet-marker"><i class="planet-icon u-col fas fa-eye"></i></div></div>
-        <div class="orbital-path" id="neptune"><div class="planet-marker"><i class="planet-icon n-col fas fa-circle"></i></div></div>
-        <div class="comet-orbit" id="halley" style="width: 100%; height: 35%;"><div class="comet-marker"><i class="fas fa-star comet-head"></i></div></div>
-        <div class="comet-orbit" id="nibiru"><div class="comet-marker"><i class="fas fa-radiation nib-col"></i></div></div>
-    </div>
+<div id="canvas-container"></div>
+
+<div id="hud-top">
+  <div id="title-block">
+    <h1>Sistema Solar · Simulación 3D</h1>
+    <div class="sub">Posiciones orbitales en tiempo real</div>
+  </div>
+  <div id="clock-box">
+    <div class="date-line" id="dateLine">--</div>
+    <div class="mode-line" id="modeLine">MODO: TIEMPO REAL</div>
+  </div>
 </div>
+
+<div id="planet-label"></div>
+
+<div id="controls">
+  <div class="grp">
+    <button id="btnRealtime" class="active" title="Usar la fecha y hora real del dispositivo">Tiempo real</button>
+    <button id="btnPause" title="Pausar / reanudar el avance del tiempo">Pausa</button>
+  </div>
+  <div class="grp">
+    <label for="speedRange">Velocidad simulada</label>
+    <input type="range" id="speedRange" min="0" max="6" step="1" value="0">
+  </div>
+  <div class="grp">
+    <button id="btnOrbits" class="active" title="Mostrar / ocultar líneas orbitales">Órbitas</button>
+    <button id="btnLabelsToggle" title="Mostrar / ocultar nombres flotantes">Nombres</button>
+    <button id="btnReset" title="Restablecer la cámara">Cámara</button>
+  </div>
+  <div class="grp">
+    <button id="btnMoons" class="active" title="Mostrar / ocultar las lunas principales">Lunas</button>
+    <button id="btnComets" class="active" title="Mostrar / ocultar los cometas">Cometas</button>
+    <button id="btnConstellations" title="Mostrar / ocultar constelaciones">Constelaciones</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-    // Se mantiene la lógica original del sistema solar para garantizar el funcionamiento
-    let scale = 0.8, posX = 0, posY = 0;
-    let lastPinchDist = 0, isDragging = false, lastX = 0, lastY = 0;
-    const clock = document.getElementById('clock');
-    const scene = document.getElementById('scene');
-    function updateTransform() {
-        clock.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+const AU = 18;
+function scaleDistance(distAU){ return 10 + Math.sqrt(distAU) * AU; }
+function scaleRadius(radiusKm){ return Math.pow(radiusKm, 0.42) * 0.055; }
+function scaleMoonRadius(radiusKm){ return Math.max(0.09, Math.pow(radiusKm, 0.4) * 0.018); }
+function scaleAsteroidRadius(radiusKm){ return Math.max(0.14, Math.pow(radiusKm, 0.42) * 0.02); }
+
+const PLANETS = [
+  {name:"Mercurio", key:"mercury", distAU:0.387, periodDays:87.969, L0:252.25, radiusKm:2439.7, color:0x9c9284, tilt:0.03, rotationHours:1407.6, moons:0, desc:"El planeta más pequeño y más cercano al Sol. Sufre las mayores variaciones de temperatura del Sistema Solar."},
+  {name:"Venus", key:"venus", distAU:0.723, periodDays:224.701, L0:181.98, radiusKm:6051.8, color:0xd9b384, tilt:177.4, rotationHours:-5832.5, moons:0, desc:"El planeta más caliente, con una densa atmósfera de CO2 y lluvia de ácido sulfúrico."},
+  {name:"Tierra", key:"earth", distAU:1.0, periodDays:365.256, L0:100.47, radiusKm:6371, color:0x2e6bb5, tilt:23.44, rotationHours:23.93, moons:1, desc:"Nuestro hogar. El único planeta conocido con vida, agua líquida en superficie y una atmósfera rica en oxígeno."},
+  {name:"Marte", key:"mars", distAU:1.524, periodDays:686.980, L0:355.43, radiusKm:3389.5, color:0xb5502e, tilt:25.19, rotationHours:24.62, moons:2, desc:"El planeta rojo. Presenta el volcán más grande conocido (Monte Olimpo) y casquetes polares de hielo."},
+  {name:"Júpiter", key:"jupiter", distAU:5.203, periodDays:4332.589, L0:34.35, radiusKm:69911, color:0xc9a06a, tilt:3.13, rotationHours:9.93, moons:95, desc:"El gigante gaseoso más grande. Su Gran Mancha Roja es una tormenta anticiclónica de siglos de antigüedad."},
+  {name:"Saturno", key:"saturn", distAU:9.537, periodDays:10759.22, L0:50.08, radiusKm:58232, color:0xe0c98f, tilt:26.73, rotationHours:10.7, moons:146, hasRing:true, desc:"Famoso por su espectacular sistema de anillos formados por hielo y roca."},
+  {name:"Urano", key:"uranus", distAU:19.191, periodDays:30685.4, L0:314.20, radiusKm:25362, color:0x9fd8dc, tilt:97.77, rotationHours:-17.2, moons:28, hasRing:true, desc:"Gigante de hielo que gira prácticamente 'tumbado' sobre su órbita."},
+  {name:"Neptuno", key:"neptune", distAU:30.069, periodDays:60189, L0:304.22, radiusKm:24622, color:0x3d5fd9, tilt:28.32, rotationHours:16.1, moons:16, desc:"El planeta más lejano y ventoso, con vientos que superan los 2000 km/h."}
+];
+
+const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+
+function getOrbitalAngle(planet, dateMs){
+  const daysSinceJ2000 = (dateMs - J2000) / 86400000;
+  const meanMotion = 360 / planet.periodDays;
+  let L = planet.L0 + meanMotion * daysSinceJ2000;
+  L = ((L % 360) + 360) % 360;
+  return THREE.MathUtils.degToRad(L);
+}
+
+const MOONS = [
+  { name:"Luna", parentKey:"earth", radiusKm:1737.4, periodDays:27.32, orbitDist:3.0, color:0xbfbfbf, desc:"El único satélite natural de la Tierra. Estabiliza su eje de rotación y genera las mareas." },
+  { name:"Fobos", parentKey:"mars", radiusKm:11.1, periodDays:0.319, orbitDist:2.1, color:0x8a7a6a, desc:"La mayor luna de Marte. Orbita tan cerca que completa una vuelta en menos de 8 horas." },
+  { name:"Deimos", parentKey:"mars", radiusKm:6.2, periodDays:1.263, orbitDist:2.7, color:0x9a8a7a, desc:"La luna más pequeña y lejana de Marte, de forma irregular." },
+  { name:"Metis", parentKey:"jupiter", radiusKm:21.5, periodDays:0.295, orbitDist:4.6, color:0x8a8378, desc:"La luna conocida más cercana a Júpiter, orbitando dentro de su sistema de anillos." },
+  { name:"Adrastea", parentKey:"jupiter", radiusKm:8.2, periodDays:0.298, orbitDist:4.8, color:0x9a9388, desc:"Pequeña luna interior que contribuye material al tenue anillo principal de Júpiter." },
+  { name:"Amaltea", parentKey:"jupiter", radiusKm:83.5, periodDays:0.498, orbitDist:5.1, color:0xb5604a, desc:"Luna irregular de color rojizo, la mayor de las interiores no galileanas." },
+  { name:"Tebe", parentKey:"jupiter", radiusKm:49.3, periodDays:0.675, orbitDist:5.5, color:0x9a8a78, desc:"Luna interior con una superficie muy craterizada, salpicada de grandes impactos." },
+  { name:"Ío", parentKey:"jupiter", radiusKm:1821.6, periodDays:1.769, orbitDist:6.3, color:0xe8d27a, desc:"La luna con mayor actividad volcánica conocida del Sistema Solar." },
+  { name:"Europa", parentKey:"jupiter", radiusKm:1560.8, periodDays:3.551, orbitDist:7.1, color:0xd8cbb0, desc:"Oculta un océano de agua líquida bajo su corteza helada." },
+  { name:"Ganímedes", parentKey:"jupiter", radiusKm:2634.1, periodDays:7.155, orbitDist:8.0, color:0xb0a58f, desc:"La luna más grande del Sistema Solar, mayor que el planeta Mercurio." },
+  { name:"Calisto", parentKey:"jupiter", radiusKm:2410.3, periodDays:16.689, orbitDist:9.0, color:0x7c7263, desc:"Una de las superficies más antiguas y craterizadas conocidas." },
+  { name:"Himalia", parentKey:"jupiter", radiusKm:85, periodDays:250.6, orbitDist:10.2, color:0x7a7268, desc:"La mayor luna irregular de Júpiter, líder del grupo Himalia." },
+  { name:"Elara", parentKey:"jupiter", radiusKm:43, periodDays:259.6, orbitDist:10.6, color:0x847c6e, desc:"Segunda luna del grupo Himalia, probablemente fragmentos de un mismo cuerpo original." },
+  { name:"Leda", parentKey:"jupiter", radiusKm:10, periodDays:240.9, orbitDist:10.0, color:0x8a8276, desc:"Pequeña luna irregular perteneciente al grupo Himalia." },
+  { name:"Lisitea", parentKey:"jupiter", radiusKm:18, periodDays:259.2, orbitDist:10.8, color:0x7e7668, desc:"Otra integrante del grupo Himalia de lunas irregulares prógradas." },
+  { name:"Ananké", parentKey:"jupiter", radiusKm:14, periodDays:-629.8, orbitDist:11.4, color:0x6a6458, desc:"Líder del grupo Ananké, de órbita retrógrada muy inclinada." },
+  { name:"Carme", parentKey:"jupiter", radiusKm:23, periodDays:-702.3, orbitDist:11.9, color:0x655f52, desc:"Líder del grupo Carme, lunas retrógradas de origen probablemente común." },
+  { name:"Pasífae", parentKey:"jupiter", radiusKm:30, periodDays:-735.4, orbitDist:12.4, color:0x5f594d, desc:"Líder del grupo Pasífae, el más lejano de los grandes grupos irregulares de Júpiter." },
+  { name:"Sinope", parentKey:"jupiter", radiusKm:19, periodDays:-724.5, orbitDist:12.8, color:0x5a5448, desc:"Luna irregular retrógrada asociada al grupo Pasífae." },
+  { name:"Pan", parentKey:"saturn", radiusKm:14.1, periodDays:0.575, orbitDist:4.3, color:0xa89a82, desc:"Diminuta luna 'pastora' que orbita dentro de la División de Encke, en el anillo A." },
+  { name:"Atlas", parentKey:"saturn", radiusKm:20.5, periodDays:0.602, orbitDist:4.5, color:0xa89a82, desc:"Luna con forma de plato volador que orbita justo fuera del anillo A." },
+  { name:"Prometeo", parentKey:"saturn", radiusKm:86.2, periodDays:0.613, orbitDist:4.7, color:0x9c8e78, desc:"Luna pastora interior del anillo F de Saturno." },
+  { name:"Pandora", parentKey:"saturn", radiusKm:81.4, periodDays:0.629, orbitDist:4.9, color:0x9c8e78, desc:"Luna pastora exterior del anillo F, junto a Prometeo." },
+  { name:"Epimeteo", parentKey:"saturn", radiusKm:116.2, periodDays:0.694, orbitDist:5.1, color:0xa89a86, desc:"Comparte una órbita casi idéntica con Jano, intercambiando posiciones cada pocos años." },
+  { name:"Jano", parentKey:"saturn", radiusKm:179.3, periodDays:0.695, orbitDist:5.3, color:0xa89a86, desc:"Co-orbital con Epimeteo; ambas evitan colisionar intercambiando órbitas periódicamente." },
+  { name:"Mimas", parentKey:"saturn", radiusKm:198.2, periodDays:0.942, orbitDist:5.7, color:0xc7c2b8, desc:"Su gran cráter Herschel le da el aspecto de la 'Estrella de la Muerte'." },
+  { name:"Encélado", parentKey:"saturn", radiusKm:252.1, periodDays:1.370, orbitDist:6.1, color:0xe8f0f5, desc:"Expulsa géiseres de agua helada desde un océano subsuperficial; muy reflectante." },
+  { name:"Tetis", parentKey:"saturn", radiusKm:531.1, periodDays:1.888, orbitDist:6.5, color:0xd0cec9, desc:"Presenta un enorme cañón, Ithaca Chasma, que recorre buena parte de su superficie." },
+  { name:"Dione", parentKey:"saturn", radiusKm:561.4, periodDays:2.737, orbitDist:6.9, color:0xc2beb8, desc:"Muestra acantilados de hielo brillante en su hemisferio posterior." },
+  { name:"Rea", parentKey:"saturn", radiusKm:763.8, periodDays:4.518, orbitDist:7.4, color:0xc7c2b8, desc:"La segunda luna más grande de Saturno, compuesta mayormente de hielo." },
+  { name:"Titán", parentKey:"saturn", radiusKm:2574.7, periodDays:15.945, orbitDist:8.4, color:0xd9a55c, desc:"La única luna del Sistema Solar con una atmósfera densa y lagos de metano líquido." },
+  { name:"Hiperión", parentKey:"saturn", radiusKm:135, periodDays:21.28, orbitDist:9.0, color:0xb0a08a, desc:"Luna de forma muy irregular con una rotación caótica e impredecible." },
+  { name:"Jápeto", parentKey:"saturn", radiusKm:734.5, periodDays:79.32, orbitDist:9.8, color:0x8a7f6c, desc:"Tiene un hemisferio oscuro y otro brillante, además de una cresta ecuatorial única." },
+  { name:"Febe", parentKey:"saturn", radiusKm:106.5, periodDays:-550.3, orbitDist:10.6, color:0x5a544a, desc:"Luna irregular retrógrada, probablemente un objeto capturado del cinturón de Kuiper." },
+  { name:"Miranda", parentKey:"uranus", radiusKm:235.8, periodDays:1.413, orbitDist:5.0, color:0xa8b0b5, desc:"Presenta un terreno extremo, con uno de los acantilados más altos conocidos del Sistema Solar." },
+  { name:"Ariel", parentKey:"uranus", radiusKm:578.9, periodDays:2.520, orbitDist:5.5, color:0xb5bcc0, desc:"La luna con la superficie más joven y brillante de Urano." },
+  { name:"Umbriel", parentKey:"uranus", radiusKm:584.7, periodDays:4.144, orbitDist:6.0, color:0x7a7d80, desc:"La luna más oscura de las cinco principales de Urano." },
+  { name:"Titania", parentKey:"uranus", radiusKm:788.4, periodDays:8.706, orbitDist:6.6, color:0x9fb0b8, desc:"La luna más grande de Urano." },
+  { name:"Oberón", parentKey:"uranus", radiusKm:761.4, periodDays:13.463, orbitDist:7.2, color:0x8a9aa3, desc:"La segunda luna más grande de Urano, con una superficie muy antigua." },
+  { name:"Puck", parentKey:"uranus", radiusKm:81, periodDays:0.762, orbitDist:4.6, color:0x8a8a8a, desc:"La mayor de las lunas interiores de Urano, descubierta por la sonda Voyager 2." },
+  { name:"Náyade", parentKey:"neptune", radiusKm:33, periodDays:0.294, orbitDist:4.3, color:0x8a95a0, desc:"La luna más interna y cercana a Neptuno de las conocidas." },
+  { name:"Talasa", parentKey:"neptune", radiusKm:41, periodDays:0.311, orbitDist:4.5, color:0x8a95a0, desc:"Pequeña luna interior descubierta por la sonda Voyager 2 en 1989." },
+  { name:"Despina", parentKey:"neptune", radiusKm:78, periodDays:0.335, orbitDist:4.7, color:0x8a95a0, desc:"Orbita cerca del tenue sistema de anillos de Neptuno." },
+  { name:"Galatea", parentKey:"neptune", radiusKm:87, periodDays:0.429, orbitDist:4.9, color:0x8a95a0, desc:"Su gravedad ayuda a mantener la estructura de uno de los anillos de Neptuno." },
+  { name:"Larisa", parentKey:"neptune", radiusKm:97, periodDays:0.555, orbitDist:5.1, color:0x8a95a0, desc:"Luna interior de forma irregular, descubierta primero por ocultación estelar en 1981." },
+  { name:"Proteo", parentKey:"neptune", radiusKm:210, periodDays:1.122, orbitDist:5.5, color:0x848c92, desc:"Una de las lunas más grandes que no tiene forma esférica por su baja gravedad." },
+  { name:"Tritón", parentKey:"neptune", radiusKm:1353.4, periodDays:-5.877, orbitDist:6.4, color:0xb9c8d9, desc:"La única gran luna con órbita retrógrada; probablemente un objeto capturado del cinturón de Kuiper." },
+  { name:"Nereida", parentKey:"neptune", radiusKm:170, periodDays:360.1, orbitDist:7.4, color:0xa0aab0, desc:"Tiene una de las órbitas más excéntricas de cualquier luna del Sistema Solar." }
+];
+
+function getMoonAngle(moon, dateMs, phaseOffsetDeg){
+  const daysSinceJ2000 = (dateMs - J2000) / 86400000;
+  const meanMotion = 360 / Math.abs(moon.periodDays);
+  const dir = moon.periodDays < 0 ? -1 : 1;
+  let L = phaseOffsetDeg + dir * meanMotion * daysSinceJ2000;
+  L = ((L % 360) + 360) % 360;
+  return THREE.MathUtils.degToRad(L);
+}
+
+const NAMED_ASTEROIDS = [
+  { name:"Ceres", distAU:2.766, periodDays:1682, L0:95.99, radiusKm:469.7, color:0xb0a48f, desc:"El mayor objeto del cinturón de asteroides, clasificado también como planeta enano." },
+  { name:"Vesta", distAU:2.362, periodDays:1325.75, L0:205.0, radiusKm:262.7, color:0xc9c2b0, desc:"El segundo objeto más masivo del cinturón; en cielos muy oscuros llega a verse a simple vista." },
+  { name:"Palas", distAU:2.772, periodDays:1686, L0:173.0, radiusKm:256, color:0xa89a86, desc:"El tercer objeto más grande del cinturón, con una órbita inusualmente inclinada." }
+];
+
+const COMETS = [
+  { name:"Cometa Halley", key:"halley", periheAU:0.586, apheAU:35.08, periodDays:27510, tPerihelion: Date.UTC(1986,1,9), inclinationDeg:162.3, argPeriDeg:170, color:0xbfe0ff, desc:"El cometa periódico más famoso, visible a simple vista cada ~76 años. Su próximo perihelio será en 2061." },
+  { name:"Cometa Encke", key:"encke", periheAU:0.336, apheAU:4.09, periodDays:1204, tPerihelion: Date.UTC(2023,9,22), inclinationDeg:11.8, argPeriDeg:187, color:0xffd9a0, desc:"Tiene el periodo orbital conocido más corto (~3,3 años) entre los cometas periódicos numerados." }
+];
+
+function solveKepler(M, e){
+  let E = M;
+  for (let i=0;i<6;i++){ E = E - (E - e*Math.sin(E) - M) / (1 - e*Math.cos(E)); }
+  return E;
+}
+
+function getCometPosition(comet, dateMs){
+  const rPeri = scaleDistance(comet.periheAU);
+  const rAphe = scaleDistance(comet.apheAU);
+  const a = (rPeri + rAphe) / 2;
+  const c = (rAphe - rPeri) / 2;
+  const e = c / a;
+  const daysSincePeri = (dateMs - comet.tPerihelion) / 86400000;
+  let frac = (daysSincePeri / comet.periodDays) % 1;
+  if (frac < 0) frac += 1;
+  const M = frac * Math.PI * 2;
+  const E = solveKepler(M, e);
+  const nu = 2 * Math.atan2(Math.sqrt(1+e)*Math.sin(E/2), Math.sqrt(1-e)*Math.cos(E/2));
+  const r = a * (1 - e*Math.cos(E));
+  const omega = THREE.MathUtils.degToRad(comet.argPeriDeg);
+  return { x: r*Math.cos(nu+omega), z: r*Math.sin(nu+omega), r };
+}
+
+const timeState = {
+  realtime: true,
+  paused: false,
+  speedIndex: 0,
+  speedMultipliers: [1, 3600, 86400, 604800, 2629800, 15778800, 31557600],
+  speedLabels: ["1x (real)","1h/seg","1día/seg","1sem/seg","1mes/seg","6m/seg","1año/seg"],
+  simMs: Date.now(),
+  lastFrameMs: performance.now()
+};
+
+function currentSimDate(){ return new Date(timeState.simMs); }
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 5000);
+camera.position.set(0, 90, 220);
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference:"high-performance" });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 8;
+controls.maxDistance = 1400;
+controls.zoomSpeed = 0.9;
+scene.add(new THREE.AmbientLight(0x334466, 0.35));
+const sunLight = new THREE.PointLight(0xfff4e0, 3.2, 0, 1.3);
+sunLight.position.set(0,0,0);
+scene.add(sunLight);
+
+function buildStarfield(){
+  const starCount = 9000;
+  const positions = new Float32Array(starCount * 3);
+  const colors = new Float32Array(starCount * 3);
+  const sizes = new Float32Array(starCount);
+  const palette = [[1, 1, 1], [0.75,0.85,1], [1,0.9,0.75], [0.85,0.95,1]];
+  for(let i=0;i<starCount;i++){
+    const r = 900 + Math.random() * 1400;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2*Math.random()-1);
+    positions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[i*3+1] = r * Math.cos(phi);
+    positions[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
+    const c = palette[Math.floor(Math.random()*palette.length)];
+    colors[i*3]=c[0]; colors[i*3+1]=c[1]; colors[i*3+2]=c[2];
+    sizes[i] = Math.random() * 1.6 + 0.3;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors,3));
+  geo.setAttribute('size', new THREE.BufferAttribute(sizes,1));
+  const mat = new THREE.PointsMaterial({ size: 1.4, vertexColors:true, transparent:true, opacity:0.9, sizeAttenuation:true, depthWrite:false });
+  scene.add(new THREE.Points(geo, mat));
+}
+buildStarfield();
+
+function makeRockyTexture(baseColor, seed){
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 128;
+  const ctx = c.getContext('2d');
+  const base = new THREE.Color(baseColor);
+  ctx.fillStyle = `rgb(${base.r*255},${base.g*255},${base.b*255})`;
+  ctx.fillRect(0,0,256,128);
+  let s = seed;
+  const rand = () => { s = (s*9301+49297)%233280; return s/233280; };
+  for(let i=0;i<420;i++){
+    const x = rand()*256, y = rand()*128, r = rand()*3.2+0.4;
+    const shade = rand()>0.5 ? 255 : 0;
+    ctx.globalAlpha = rand()*0.18;
+    ctx.fillStyle = `rgb(${shade},${shade},${shade})`;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
+function makeGasGiantTexture(baseColor, bandColor, seed){
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 128;
+  const ctx = c.getContext('2d');
+  const base = new THREE.Color(baseColor);
+  const band = new THREE.Color(bandColor);
+  let s = seed;
+  const rand = () => { s = (s*9301+49297)%233280; return s/233280; };
+  const bands = 14;
+  for(let i=0;i<bands;i++){
+    const t = i/bands;
+    const mix = base.clone().lerp(band, Math.sin(t*Math.PI*6)*0.5+0.5);
+    ctx.fillStyle = `rgb(${mix.r*255},${mix.g*255},${mix.b*255})`;
+    ctx.fillRect(0, (i/bands)*128, 256, 128/bands + 1);
+  }
+  for(let i=0;i<80;i++){
+    ctx.globalAlpha = rand()*0.12;
+    ctx.fillStyle = "#ffffff";
+    const y = rand()*128;
+    ctx.fillRect(0,y,256,rand()*2);
+  }
+  ctx.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
+function makeSunTexture(){
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 128;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,128);
+  grad.addColorStop(0,"#fff6d5");
+  grad.addColorStop(0.5,"#ffcf6b");
+  grad.addColorStop(1,"#ff9d3d");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,256,128);
+  let s = 7;
+  const rand = () => { s = (s*9301+49297)%233280; return s/233280; };
+  for(let i=0;i<300;i++){
+    ctx.globalAlpha = rand()*0.15;
+    ctx.fillStyle = "#ff7a1a";
+    ctx.beginPath();
+    ctx.arc(rand()*256, rand()*128, rand()*6+1, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  return new THREE.CanvasTexture(c);
+}
+
+const sunGroup = new THREE.Group();
+const sunGeo = new THREE.SphereGeometry(6.2, 48, 48);
+const sunMat = new THREE.MeshBasicMaterial({ map: makeSunTexture() });
+const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+sunMesh.userData.isSun = true;
+sunMesh.userData.info = { name:"Sol", type:'sun', rows:[['Tipo','Estrella (G2V)'],['Diámetro','1.392.700 km'],['Temp. superficial','~5.500 °C']], desc:"Contiene el 99,8% de la masa del Sistema Solar. Su luz tarda unos 8 minutos en llegar a la Tierra." };
+sunGroup.add(sunMesh);
+const glowCanvas = document.createElement('canvas');
+glowCanvas.width = glowCanvas.height = 256;
+const gctx = glowCanvas.getContext('2d');
+const rg = gctx.createRadialGradient(128,128,0,128,128,128);
+rg.addColorStop(0,"rgba(255,220,150,0.9)");
+rg.addColorStop(0.4,"rgba(255,170,80,0.35)");
+rg.addColorStop(1,"rgba(255,140,60,0)");
+gctx.fillStyle = rg;
+gctx.fillRect(0,0,256,256);
+const glowTex = new THREE.CanvasTexture(glowCanvas);
+const glowMat = new THREE.SpriteMaterial({ map:glowTex, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending });
+const glowSprite = new THREE.Sprite(glowMat);
+glowSprite.scale.set(40,40,1);
+sunGroup.add(glowSprite);
+scene.add(sunGroup);
+
+const planetMeshes = [];
+const orbitLines = [];
+const labelSprites = [];
+const moonMeshes = [];
+const moonOrbitLines = [];
+
+function buildOrbitLine(radius){
+  const segments = 256;
+  const points = [];
+  for(let i=0;i<=segments;i++){
+    const a = (i/segments) * Math.PI * 2;
+    points.push(new THREE.Vector3(Math.cos(a)*radius, 0, Math.sin(a)*radius));
+  }
+  const geo = new THREE.BufferGeometry().setFromPoints(points);
+  const mat = new THREE.LineBasicMaterial({ color:0x4a5a80, transparent:true, opacity:0.35 });
+  return new THREE.LineLoop(geo, mat);
+}
+
+function makeNameSprite(text){
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.font = "28px Segoe UI, sans-serif";
+  ctx.fillStyle = "rgba(223,230,245,0.85)";
+  ctx.textAlign = "center";
+  ctx.fillText(text, 128, 40);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({ map:tex, transparent:true, depthTest:false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(9, 2.25, 1);
+  return sprite;
+}
+
+PLANETS.forEach((p, idx) => {
+  const orbitRadius = scaleDistance(p.distAU);
+  const radius = scaleRadius(p.radiusKm);
+  const orbit = buildOrbitLine(orbitRadius);
+  scene.add(orbit);
+  orbitLines.push(orbit);
+  let texture;
+  if (p.key === "jupiter") texture = makeGasGiantTexture(0xc9a06a, 0x8a6a45, 11+idx);
+  else if (p.key === "saturn") texture = makeGasGiantTexture(0xe0c98f, 0xb59a63, 21+idx);
+  else if (p.key === "uranus") texture = makeGasGiantTexture(0x9fd8dc, 0x6fb0b6, 31+idx);
+  else if (p.key === "neptune") texture = makeGasGiantTexture(0x3d5fd9, 0x2a3f9e, 41+idx);
+  else texture = makeRockyTexture(p.color, 51+idx*7);
+  const geo = new THREE.SphereGeometry(radius, 40, 40);
+  const mat = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.85, metalness: 0.05 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.z = THREE.MathUtils.degToRad(p.tilt % 90);
+  mesh.userData.planetData = p;
+  mesh.userData.orbitRadius = orbitRadius;
+  mesh.userData.info = { name: p.name, type:'planet', rows:[['Distancia al Sol', p.distAU + ' UA'],['Periodo orbital', p.periodDays.toLocaleString('es-ES',{maximumFractionDigits:0}) + ' días'],['Radio ecuatorial', p.radiusKm.toLocaleString('es-ES') + ' km'],['Rotación', Math.abs(p.rotationHours).toFixed(1) + ' h' + (p.rotationHours<0 ? ' (retrógrada)':'')],['Lunas conocidas', String(p.moons)]], desc: p.desc };
+  const pivot = new THREE.Group();
+  pivot.add(mesh);
+  mesh.position.x = orbitRadius;
+  scene.add(pivot);
+  const moonSystem = new THREE.Group();
+  moonSystem.position.x = orbitRadius;
+  pivot.add(moonSystem);
+  MOONS.filter(m => m.parentKey === p.key).forEach((m, mi) => {
+    const moonOrbit = buildOrbitLine(m.orbitDist);
+    moonOrbit.material.color.set(0x5a6a90);
+    moonOrbit.material.opacity = 0.3;
+    moonSystem.add(moonOrbit);
+    moonOrbitLines.push(moonOrbit);
+    const moonRadius = scaleMoonRadius(m.radiusKm);
+    const moonTex = makeRockyTexture(m.color, 61 + mi*5 + idx*13);
+    const moonGeo = new THREE.SphereGeometry(moonRadius, 20, 20);
+    const moonMat = new THREE.MeshStandardMaterial({ map: moonTex, roughness:0.9, metalness:0.02 });
+    const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+    moonMesh.position.x = m.orbitDist;
+    moonMesh.userData.info = { name: m.name, type:'moon', rows:[['Planeta', p.name],['Periodo orbital', Math.abs(m.periodDays).toFixed(2) + ' días' + (m.periodDays<0 ? ' (retrógrada)':'')],['Radio', m.radiusKm.toLocaleString('es-ES') + ' km']], desc: m.desc };
+    const moonPivot = new THREE.Group();
+    moonPivot.add(moonMesh);
+    moonSystem.add(moonPivot);
+    moonMeshes.push({ pivot: moonPivot, mesh: moonMesh, data: m, phase: (mi*53 + idx*17) % 360 });
+  });
+  if (p.hasRing) {
+    const ringGeo = new THREE.RingGeometry(radius*1.4, radius*2.3, 64);
+    const pos = ringGeo.attributes.position;
+    const uv = ringGeo.attributes.uv;
+    for (let i=0;i<pos.count;i++){
+      const x = pos.getX(i), y = pos.getY(i);
+      const d = Math.sqrt(x*x+y*y);
+      uv.setXY(i, (d - radius*1.4) / (radius*0.9), 0.5);
     }
-    scene.addEventListener('touchstart', e => {
-        if (e.touches.length === 1) {
-            isDragging = true;
-            lastX = e.touches[0].clientX - posX;
-            lastY = e.touches[0].clientY - posY;
-        } else if (e.touches.length === 2) {
-            lastPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-        }
-    });
-    scene.addEventListener('touchmove', e => {
-        if (e.touches.length === 1 && isDragging) {
-            posX = e.touches[0].clientX - lastX;
-            posY = e.touches[0].clientY - lastY;
-        } else if (e.touches.length === 2) {
-            const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-            scale *= dist / lastPinchDist;
-            scale = Math.min(Math.max(0.2, scale), 5);
-            lastPinchDist = dist;
-        }
-        updateTransform();
-    });
-    scene.addEventListener('touchend', () => { isDragging = false; });
-    scene.addEventListener('dblclick', () => {
-        scale = 0.8; posX = 0; posY = 0;
-        updateTransform();
-    });
-    const zodiacs = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
-    zodiacs.forEach((symbol, i) => {
-        const sign = document.createElement('div');
-        sign.className = 'zodiac-sign';
-        sign.style.transform = `rotate(${i * 30}deg)`;
-        sign.innerText = symbol;
-        clock.appendChild(sign);
-    });
-    const planets = [
-        { id: 'mercury', period: 87.97 }, { id: 'venus', period: 224.7 },
-        { id: 'earth', period: 365.25 }, { id: 'mars', period: 686.98 },
-        { id: 'jupiter', period: 4332.59 }, { id: 'saturn', period: 10759.22 },
-        { id: 'uranus', period: 30688.5 }, { id: 'neptune', period: 60182 }
-    ];
-    const specials = [{ id: 'halley', period: 27392 }, { id: 'nibiru', period: 800000 }];
-    const starsContainer = document.getElementById('stars-container');
-    for (let i = 0; i < 150; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.width = star.style.height = Math.random() * 2 + 'px';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
-        starsContainer.appendChild(star);
+    const ringCanvas = document.createElement('canvas');
+    ringCanvas.width = 128; ringCanvas.height = 8;
+    const rctx = ringCanvas.getContext('2d');
+    const rc = new THREE.Color(p.color);
+    for (let x=0;x<128;x++){
+      const alpha = 0.25 + 0.5*Math.abs(Math.sin(x*0.4));
+      rctx.fillStyle = `rgba(${rc.r*255},${rc.g*255},${rc.b*255},${alpha})`;
+      rctx.fillRect(x,0,1,8);
     }
-    const belt = document.getElementById('asteroid-belt');
-    for (let i = 0; i < 100; i++) {
-        const ast = document.createElement('div');
-        ast.className = 'asteroid';
-        const a = Math.random() * Math.PI * 2;
-        const d = 44 + Math.random() * 4;
-        ast.style.width = ast.style.height = Math.random() * 2 + 1 + 'px';
-        ast.dataset.angle = a;
-        ast.dataset.dist = d;
-        ast.dataset.speed = (Math.random() * 0.004 + 0.001);
-        belt.appendChild(ast);
+    const ringTex = new THREE.CanvasTexture(ringCanvas);
+    const ringMat = new THREE.MeshBasicMaterial({ map: ringTex, side: THREE.DoubleSide, transparent:true });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI/2 - THREE.MathUtils.degToRad(p.tilt%90);
+    mesh.add(ring);
+  }
+  const label3d = makeNameSprite(p.name);
+  label3d.position.set(0, radius + 2.2, 0);
+  mesh.add(label3d);
+  labelSprites.push(label3d);
+  planetMeshes.push({ pivot, mesh, data: p, orbitRadius });
+});
+
+function buildAsteroidBelt(){
+  const innerR = scaleDistance(PLANETS[3].distAU) + 6;
+  const outerR = scaleDistance(PLANETS[4].distAU) - 8;
+  const count = 2600;
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(count*3);
+  for (let i=0;i<count;i++){
+    const r = innerR + Math.random()*(outerR-innerR);
+    const a = Math.random()*Math.PI*2;
+    const yOff = (Math.random()-0.5) * 2.2;
+    positions[i*3] = Math.cos(a)*r;
+    positions[i*3+1] = yOff;
+    positions[i*3+2] = Math.sin(a)*r;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  const mat = new THREE.PointsMaterial({ color: 0x9a8b74, size: 0.34, sizeAttenuation:true, transparent:true, opacity:0.85 });
+  const belt = new THREE.Points(geo, mat);
+  scene.add(belt);
+  return belt;
+}
+buildAsteroidBelt();
+
+const namedAsteroidMeshes = [];
+function buildNamedAsteroids(){
+  NAMED_ASTEROIDS.forEach((a, i) => {
+    const orbitRadius = scaleDistance(a.distAU);
+    const radius = scaleAsteroidRadius(a.radiusKm);
+    const tex = makeRockyTexture(a.color, 81 + i*9);
+    const geo = new THREE.SphereGeometry(radius, 18, 18);
+    const mat = new THREE.MeshStandardMaterial({ map: tex, roughness:0.95 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.userData.info = { name: a.name, type:'asteroid', rows:[['Distancia al Sol', a.distAU + ' UA'],['Periodo orbital', a.periodDays.toLocaleString('es-ES') + ' días'],['Radio medio', a.radiusKm.toLocaleString('es-ES') + ' km']], desc: a.desc };
+    const pivot = new THREE.Group();
+    pivot.add(mesh);
+    mesh.position.x = orbitRadius;
+    scene.add(pivot);
+    const orbit = buildOrbitLine(orbitRadius);
+    orbit.material.color.set(0x8a7a5a);
+    orbit.material.opacity = 0.2;
+    scene.add(orbit);
+    orbitLines.push(orbit);
+    namedAsteroidMeshes.push({ pivot, mesh, data: a });
+  });
+}
+buildNamedAsteroids();
+
+const cometMeshes = [];
+function buildComets(){
+  COMETS.forEach((cm) => {
+    const group = new THREE.Group();
+    group.rotation.x = THREE.MathUtils.degToRad(cm.inclinationDeg);
+    scene.add(group);
+    const rPeri = scaleDistance(cm.periheAU);
+    const rAphe = scaleDistance(cm.apheAU);
+    const a = (rPeri + rAphe) / 2;
+    const e = (rAphe - rPeri) / 2 / a;
+    const omega = THREE.MathUtils.degToRad(cm.argPeriDeg);
+    const pts = [];
+    for (let s=0; s<=200; s++){
+      const nu = (s/200) * Math.PI * 2;
+      const r = a*(1-e*e) / (1 + e*Math.cos(nu));
+      pts.push(new THREE.Vector3(r*Math.cos(nu+omega), 0, r*Math.sin(nu+omega)));
     }
-    function update() {
-        const now = new Date();
-        document.getElementById('timeDisplay').innerText = now.toLocaleTimeString('es-ES', { hour12: false });
-        document.getElementById('dateDisplay').innerText = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-        const days = (now.getTime() / 86400000) + 2440587.5;
-        planets.forEach(p => {
-            const orbit = document.getElementById(p.id);
-            const rot = (days / p.period * 360) % 360;
-            orbit.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
-            orbit.querySelector('.planet-icon').style.transform = `rotate(${-rot}deg)`;
-            if(p.id === 'earth') {
-                const mRot = (days / 27.3 * 360) % 360;
-                document.getElementById('moon-orbit').style.transform = `translate(-50%, -50%) rotate(${mRot}deg)`;
-            }
-        });
-        specials.forEach(s => {
-            const orbit = document.getElementById(s.id);
-            const rot = (days / s.period * 360) % 360;
-            orbit.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
-            orbit.querySelector('i').style.transform = `rotate(${-rot}deg)`;
-        });
-        document.querySelectorAll('.asteroid').forEach(ast => {
-            let a = parseFloat(ast.dataset.angle) + parseFloat(ast.dataset.speed);
-            ast.dataset.angle = a;
-            ast.style.left = `calc(50% + ${Math.cos(a) * ast.dataset.dist}%)`;
-            ast.style.top = `calc(50% + ${Math.sin(a) * ast.dataset.dist}%)`;
-        });
-        requestAnimationFrame(update);
+    const orbitGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const orbitMat = new THREE.LineBasicMaterial({ color:0x8fd0ff, transparent:true, opacity:0.28 });
+    const orbitLine = new THREE.LineLoop(orbitGeo, orbitMat);
+    group.add(orbitLine);
+    orbitLines.push(orbitLine);
+    const geo = new THREE.SphereGeometry(0.28, 16, 16);
+    const mat = new THREE.MeshStandardMaterial({ color: cm.color, emissive: cm.color, emissiveIntensity:0.35, roughness:0.6 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.userData.info = { name: cm.name, type:'comet', rows:[['Perihelio', cm.periheAU + ' UA'],['Afelio', cm.apheAU + ' UA'],['Periodo orbital', Math.round(cm.periodDays/365.25) + ' años aprox.']], desc: cm.desc };
+    group.add(mesh);
+    const tailCount = 220;
+    const tailGeo = new THREE.BufferGeometry();
+    tailGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tailCount*3), 3));
+    const tailMat = new THREE.PointsMaterial({ color: cm.color, size:0.45, transparent:true, opacity:0.55, sizeAttenuation:true, blending:THREE.AdditiveBlending, depthWrite:false });
+    const tail = new THREE.Points(tailGeo, tailMat);
+    group.add(tail);
+    cometMeshes.push({ group, mesh, tail, tailCount, data: cm });
+  });
+}
+buildComets();
+
+const CONSTELLATIONS = [
+  { name:"Osa Mayor", stars:[[165.9,61.75],[165.5,56.38],[178.5,53.7],[183.9,57.03],[193.5,55.96],[200.98,54.93],[206.9,49.31]], lines:[[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]] },
+  { name:"Orión", stars:[[88.79,7.41],[81.28,6.35],[83.0,-0.3],[84.05,-1.2],[85.2,-1.94],[86.94,-9.67],[78.63,-8.2]], lines:[[0,1],[1,2],[2,3],[3,4],[0,4],[4,5],[2,6]] },
+  { name:"Casiopea", stars:[[2.29,59.15],[10.13,56.54],[14.18,60.72],[21.45,60.235],[28.6,63.67]], lines:[[0,1],[1,2],[2,3],[3,4]] },
+  { name:"Cisne", stars:[[310.36,45.28],[305.56,40.26],[292.68,27.96],[304.51,33.97],[296.24,45.13]], lines:[[0,1],[1,2],[3,1],[1,4]] },
+  { name:"Escorpio", stars:[[240.08,-22.62],[247.35,-26.43],[248.97,-28.22],[252.54,-34.29],[253.47,-38.05],[254.6,-42.36],[263.4,-37.1],[264.33,-39.03]], lines:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]] },
+  { name:"Leo", stars:[[152.09,11.97],[154.99,19.84],[168.53,20.52],[168.56,15.43],[177.26,14.57]], lines:[[0,1],[1,2],[2,3],[3,0],[3,4]] }
+];
+
+function raDecToVec(raDeg, decDeg, radius){
+  const theta = THREE.MathUtils.degToRad(raDeg);
+  const phi = THREE.MathUtils.degToRad(90 - decDeg);
+  return new THREE.Vector3(radius * Math.sin(phi) * Math.cos(theta), radius * Math.cos(phi), radius * Math.sin(phi) * Math.sin(theta));
+}
+
+const constellationGroup = new THREE.Group();
+function buildConstellations(){
+  const R = 1150;
+  CONSTELLATIONS.forEach(con => {
+    const pts3d = con.stars.map(([ra,dec]) => raDecToVec(ra, dec, R));
+    const linePositions = [];
+    con.lines.forEach(([a,b]) => { linePositions.push(pts3d[a].x, pts3d[a].y, pts3d[a].z, pts3d[b].x, pts3d[b].y, pts3d[b].z); });
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+    const lineMat = new THREE.LineBasicMaterial({ color:0x6fa0ff, transparent:true, opacity:0.45 });
+    constellationGroup.add(new THREE.LineSegments(lineGeo, lineMat));
+    const starGeo = new THREE.BufferGeometry().setFromPoints(pts3d);
+    const starMat = new THREE.PointsMaterial({ color:0xe8f2ff, size:3.2, sizeAttenuation:false, transparent:true, opacity:0.9 });
+    constellationGroup.add(new THREE.Points(starGeo, starMat));
+    const center = new THREE.Vector3();
+    pts3d.forEach(p => center.add(p));
+    center.divideScalar(pts3d.length).multiplyScalar(1.02);
+    const label = makeNameSprite(con.name);
+    label.scale.set(70, 17.5, 1);
+    label.material.depthTest = false;
+    label.position.copy(center);
+    constellationGroup.add(label);
+  });
+  constellationGroup.visible = false;
+  scene.add(constellationGroup);
+}
+buildConstellations();
+
+const raycaster = new THREE.Raycaster();
+const pointerNDC = new THREE.Vector2();
+const labelEl = document.getElementById('planet-label');
+let selectedMesh = null;
+const TYPE_LABELS = { sun:"Estrella", planet:"Planeta", moon:"Luna", asteroid:"Asteroide", comet:"Cometa" };
+
+function showBodyLabel(mesh, screenX, screenY){
+  const info = mesh.userData.info;
+  if (!info) return;
+  const rowsHtml = info.rows.map(([k,v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join('');
+  labelEl.innerHTML = `<h2>${info.name} <span style="color:var(--dim); font-size:10px; letter-spacing:1px;">· ${TYPE_LABELS[info.type] || ''}</span></h2>${rowsHtml}<div class="desc">${info.desc}</div>`;
+  labelEl.style.left = screenX + 'px'; labelEl.style.top = screenY + 'px';
+  labelEl.classList.add('show');
+}
+
+function hideLabel(){ labelEl.classList.remove('show'); selectedMesh = null; }
+
+function onPointerSelect(clientX, clientY){
+  pointerNDC.x = (clientX / window.innerWidth) * 2 - 1;
+  pointerNDC.y = -(clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(pointerNDC, camera);
+  const targets = [sunMesh, ...planetMeshes.map(pm => pm.mesh), ...moonMeshes.map(mm => mm.mesh), ...namedAsteroidMeshes.map(am => am.mesh), ...cometMeshes.map(cm => cm.mesh)];
+  const hits = raycaster.intersectObjects(targets, false);
+  if (hits.length > 0){ selectedMesh = hits[0].object; showBodyLabel(selectedMesh, clientX, clientY); } else { hideLabel(); }
+}
+
+renderer.domElement.addEventListener('click', (e) => { onPointerSelect(e.clientX, e.clientY); });
+renderer.domElement.addEventListener('touchend', (e) => {
+  if (e.changedTouches && e.changedTouches[0]){ const t = e.changedTouches[0]; onPointerSelect(t.clientX, t.clientY); }
+}, { passive:true });
+
+function updateSelectedLabelPosition(){
+  if (!selectedMesh || !labelEl.classList.contains('show')) return;
+  const vec = new THREE.Vector3();
+  selectedMesh.getWorldPosition(vec);
+  vec.project(camera);
+  const x = (vec.x * 0.5 + 0.5) * window.innerWidth;
+  const y = (-vec.y * 0.5 + 0.5) * window.innerHeight;
+  labelEl.style.left = x + 'px'; labelEl.style.top = y + 'px';
+}
+
+const btnRealtime = document.getElementById('btnRealtime');
+const btnPause = document.getElementById('btnPause');
+const speedRange = document.getElementById('speedRange');
+const btnOrbits = document.getElementById('btnOrbits');
+const btnLabelsToggle = document.getElementById('btnLabelsToggle');
+const btnReset = document.getElementById('btnReset');
+const btnMoons = document.getElementById('btnMoons');
+const btnComets = document.getElementById('btnComets');
+const btnConstellations = document.getElementById('btnConstellations');
+const dateLine = document.getElementById('dateLine');
+const modeLine = document.getElementById('modeLine');
+
+let orbitsVisible = true;
+let namesVisible = false;
+let moonsVisible = true;
+let cometsVisible = true;
+let constellationsVisible = false;
+labelSprites.forEach(s => s.visible = false);
+
+btnMoons.addEventListener('click', () => { moonsVisible = !moonsVisible; moonMeshes.forEach(mm => { mm.pivot.visible = moonsVisible; }); btnMoons.classList.toggle('active', moonsVisible); });
+btnComets.addEventListener('click', () => { cometsVisible = !cometsVisible; cometMeshes.forEach(cm => { cm.group.visible = cometsVisible; }); btnComets.classList.toggle('active', cometsVisible); });
+btnConstellations.addEventListener('click', () => { constellationsVisible = !constellationsVisible; constellationGroup.visible = constellationsVisible; btnConstellations.classList.toggle('active', constellationsVisible); });
+btnRealtime.addEventListener('click', () => { timeState.realtime = true; timeState.paused = false; timeState.speedIndex = 0; speedRange.value = 0; timeState.simMs = Date.now(); btnRealtime.classList.add('active'); btnPause.classList.remove('active'); });
+btnPause.addEventListener('click', () => { timeState.paused = !timeState.paused; btnPause.classList.toggle('active', timeState.paused); });
+speedRange.addEventListener('input', () => { timeState.speedIndex = parseInt(speedRange.value, 10); timeState.realtime = (timeState.speedIndex === 0); btnRealtime.classList.toggle('active', timeState.realtime); });
+btnOrbits.addEventListener('click', () => { orbitsVisible = !orbitsVisible; orbitLines.forEach(l => l.visible = orbitsVisible); btnOrbits.classList.toggle('active', orbitsVisible); });
+btnLabelsToggle.addEventListener('click', () => { namesVisible = !namesVisible; labelSprites.forEach(s => s.visible = namesVisible); btnLabelsToggle.classList.toggle('active', namesVisible); });
+btnReset.addEventListener('click', () => { camera.position.set(0, 90, 220); controls.target.set(0,0,0); controls.update(); });
+
+function updateSimTime(){
+  const now = performance.now();
+  const dtMs = now - timeState.lastFrameMs;
+  timeState.lastFrameMs = now;
+  if (timeState.realtime && !timeState.paused){ timeState.simMs = Date.now(); } else if (!timeState.paused){ timeState.simMs += dtMs * timeState.speedMultipliers[timeState.speedIndex] / 1000 * 1000; }
+}
+
+function updateHud(){
+  const d = currentSimDate();
+  dateLine.textContent = d.toLocaleString('es-ES', { year:'numeric', month:'long', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  modeLine.textContent = timeState.paused ? 'MODO: PAUSADO' : (timeState.realtime ? 'MODO: TIEMPO REAL' : `MODO: SIMULADO (${timeState.speedLabels[timeState.speedIndex]})`);
+}
+
+let hudTick = 0;
+function animate(){
+  requestAnimationFrame(animate);
+  updateSimTime();
+  const simDate = currentSimDate();
+  const simMs = simDate.getTime();
+  sunMesh.rotation.y += 0.0007;
+  planetMeshes.forEach(pm => {
+    const angle = getOrbitalAngle(pm.data, simMs);
+    pm.pivot.rotation.y = -angle;
+    pm.mesh.rotation.y += (24 / Math.abs(pm.data.rotationHours || 24)) * 0.01;
+  });
+  moonMeshes.forEach(mm => {
+    const angle = getMoonAngle(mm.data, simMs, mm.phase);
+    mm.pivot.rotation.y = -angle;
+    mm.mesh.rotation.y += 0.015;
+  });
+  namedAsteroidMeshes.forEach(am => {
+    const angle = getOrbitalAngle(am.data, simMs);
+    am.pivot.rotation.y = -angle;
+    am.mesh.rotation.y += 0.02;
+  });
+  cometMeshes.forEach(cm => {
+    const pos = getCometPosition(cm.data, simMs);
+    cm.mesh.position.set(pos.x, 0, pos.z);
+    cm.mesh.rotation.y += 0.03;
+    const dirLen = Math.hypot(pos.x, pos.z) || 1;
+    const dirX = pos.x / dirLen, dirZ = pos.z / dirLen;
+    const tailLen = 2.5 + Math.max(0, 30 - pos.r) * 0.18;
+    const posAttr = cm.tail.geometry.attributes.position;
+    for (let i=0;i<cm.tailCount;i++){
+      const t = i / cm.tailCount;
+      const spread = (Math.random()-0.5) * 0.7 * (0.3 + t);
+      posAttr.setXYZ(i, pos.x + dirX * tailLen * t + spread, spread * 0.6, pos.z + dirZ * tailLen * t + spread);
     }
-    updateTransform();
-    update();
+    posAttr.needsUpdate = true;
+  });
+  updateSelectedLabelPosition();
+  hudTick++;
+  if (hudTick % 6 === 0) updateHud();
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+window.addEventListener('load', () => { updateHud(); const loader = document.getElementById('loader'); setTimeout(() => { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 650); }, 350); animate(); });
 </script>
 </body>
 </html>
