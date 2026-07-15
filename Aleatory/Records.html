@@ -8,15 +8,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
-        :root { --color-principal: #4CAF50; --color-fondo: #282c34; --color-tablero: #3b4252; --color-texto: #e0e0e0; --color-puntos: #4285F4; }
-        body { font-family: sans-serif; background-color: var(--color-fondo); color: var(--color-texto); display: flex; flex-direction: column; align-items: center; padding: 30px; user-select: none; }
-        h1 { color: var(--color-principal); border-bottom: 3px solid var(--color-principal); padding-bottom: 5px; margin-bottom: 30px; }
-        #records-table { width: 100%; max-width: 900px; border-collapse: separate; border-spacing: 0 15px; }
-        #records-table th { background-color: var(--color-principal); color: var(--color-fondo); padding: 18px; text-align: left; border-radius: 8px 8px 0 0; }
-        #records-table tr { background-color: var(--color-tablero); border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        #records-table td { padding: 18px; }
-        .score-cell { color: var(--color-puntos); font-weight: bold; }
-        .time-cell { color: var(--color-principal); font-weight: bold; }
+        :root { --color-principal: #4CAF50; --color-fondo: #282c34; --color-tablero: #3b4252; --color-texto: #e0e0e0; --color-puntos: #4285F4; --max-width-pc: 900px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--color-fondo); color: var(--color-texto); display: flex; flex-direction: column; align-items: center; padding: 30px; user-select: none; }
+        h1 { color: var(--color-principal); border-bottom: 3px solid var(--color-principal); padding-bottom: 5px; margin-bottom: 30px; font-size: 2.5em; }
+        #records-table { width: 100%; max-width: var(--max-width-pc); border-collapse: separate; border-spacing: 0 15px; }
+        #records-table th, #records-table td { padding: 18px 15px; text-align: left; font-size: 1.05em; }
+        #records-table th { background-color: var(--color-principal); color: var(--color-fondo); border-radius: 8px 8px 0 0; }
+        #records-table tr { background-color: var(--color-tablero); border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+        .score-cell { font-weight: bold; color: var(--color-puntos); }
+        .time-cell { font-weight: bold; color: var(--color-principal); }
         .date-cell { font-size: 0.85em; color: #999; text-align: right; }
     </style>
 </head>
@@ -25,50 +25,40 @@
     <p id="message">Cargando récords...</p>
     <table id="records-table">
         <thead>
-            <tr>
-                <th>Posición</th><th>Usuario</th><th>Puntos</th><th>Tiempo</th><th>Fecha</th>
-            </tr>
+            <tr><th>Posición</th><th>Usuario</th><th>Puntos</th><th>Tiempo</th><th>Fecha/Hora</th></tr>
         </thead>
         <tbody></tbody>
     </table>
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBw4Gpq94uUunO5tmuKyJAH6mmMEqvP1j4",
-            authDomain: "bikot-worl.firebaseapp.com",
-            projectId: "bikot-worl",
-            storageBucket: "bikot-worl.firebasestorage.app",
-            messagingSenderId: "197140262797",
-            appId: "1:197140262797:web:4a03ac108230694ea9d7c4"
+            apiKey: "AIzaSyBcAqXK3qFD8j1T7h6cjO0U3d5nBoVAgVk",
+            authDomain: "procesador-56b7a.firebaseapp.com",
+            projectId: "procesador-56b7a",
+            storageBucket: "procesador-56b7a.firebasestorage.app",
+            messagingSenderId: "1029072924025",
+            appId: "1:1029072924025:web:c32d735e453416ecfd93a8"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const leaderboardCol = db.collection('leaderboard_aleatory_game');
         const tbody = document.querySelector('#records-table tbody');
         const messageElement = document.getElementById('message');
 
         async function fetchRecords() {
             try {
-                // Asegúrate de que el índice en Firebase esté creado para esta consulta
-                const querySnapshot = await leaderboardCol.orderBy('score', 'desc').limit(100).get();
+                const snapshot = await db.collection('leaderboard_aleatory_game')
+                    .orderBy('score', 'desc')
+                    .orderBy('timeSeconds', 'asc')
+                    .limit(100).get();
                 tbody.innerHTML = "";
-                messageElement.textContent = "";
-                
-                querySnapshot.forEach((doc, index) => {
-                    const data = doc.data();
+                messageElement.textContent = snapshot.empty ? "Aún no hay récords." : "";
+                snapshot.forEach((doc, i) => {
+                    const d = doc.data();
                     const row = tbody.insertRow();
-                    
-                    // Se usa || 'N/A' para evitar que salga "undefined"
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${data.username || 'Anónimo'}</td>
-                        <td class="score-cell">${data.score}</td>
-                        <td class="time-cell">${data.timeFormatted || 'N/A'}</td>
-                        <td class="date-cell">${data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A'}</td>
-                    `;
+                    row.innerHTML = `<td>${i+1}</td><td>${d.username}</td><td class="score-cell">${d.score}</td><td class="time-cell">${d.timeFormatted || '0:00'}</td><td class="date-cell">${d.timestamp ? d.timestamp.toDate().toLocaleString() : 'N/A'}</td>`;
                 });
-            } catch (error) {
-                console.error(error);
-                messageElement.textContent = "Error al cargar: asegúrate de haber creado el índice en Firebase.";
+            } catch (e) {
+                messageElement.textContent = "Error: Crea el índice compuesto en Firebase (revisa consola F12).";
+                console.error(e);
             }
         }
         fetchRecords();
