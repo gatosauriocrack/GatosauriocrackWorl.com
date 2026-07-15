@@ -87,7 +87,7 @@ if (isFirebaseConnected) {
     }
 }
 
-const CLASIFICACION_URL = "https://gatosauriocrack.github.io/snake/Records?from=game";
+const CLASIFICACION_URL = "https://gatosauriocrackworl.com/snake/Records?from=game";
 
 function openAuthModal() {
     document.getElementById('authModal').style.display = 'flex';
