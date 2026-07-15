@@ -48,17 +48,26 @@
 
         async function fetchRecords() {
             try {
+                // Asegúrate de que el índice en Firebase esté creado para esta consulta
                 const querySnapshot = await leaderboardCol.orderBy('score', 'desc').limit(100).get();
                 tbody.innerHTML = "";
                 messageElement.textContent = "";
+                
                 querySnapshot.forEach((doc, index) => {
                     const data = doc.data();
                     const row = tbody.insertRow();
-                    row.innerHTML = `<td>${index + 1}</td><td>${data.username}</td><td class="score-cell">${data.score}</td><td class="time-cell">${data.timeFormatted || 'N/A'}</td><td class="date-cell">${data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A'}</td>`;
-row.innerHTML = `<td>${index + 1}</td><td>${data.username}</td><td class="score-cell">${data.score}</td><td class="time-cell">${data.timeFormatted || 'N/A'}</td><td class="date-cell">${data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A'}</td>`;
-
+                    
+                    // Se usa || 'N/A' para evitar que salga "undefined"
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${data.username || 'Anónimo'}</td>
+                        <td class="score-cell">${data.score}</td>
+                        <td class="time-cell">${data.timeFormatted || 'N/A'}</td>
+                        <td class="date-cell">${data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A'}</td>
+                    `;
                 });
             } catch (error) {
+                console.error(error);
                 messageElement.textContent = "Error al cargar: asegúrate de haber creado el índice en Firebase.";
             }
         }
