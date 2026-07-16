@@ -49,64 +49,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-meli-icono:before {
-  content: "\e900";
-  color: var(--color-negro-oscuro); 
-}
-.icon-Meli:before {
-  content: "\e901";
-  color: #5e5e5e;
-}
-.icon-Ambar:before {
-  content: "\e902";
-}
-.icon-Melody:before {
-  content: "\e903";
-  color: #5e5e5e;
-}
-.icon-Melissa:before {
-  content: "\e904";
-}
-.icon-Nelle:before {
-  content: "\e905";
-  color: #5e5e5e;
-}
-.icon-calculadora:before {
-  content: "\e906";
-}
-.icon-icono-snake:before {
-  content: "\e907";
-}
-.icon-album:before {
-  content: "\e908";
-}
-.icon-dino:before {
-  content: "\e909";
-}
-.icon-gato:before {
-  content: "\e90a";
-}
-.icon-icono-ia:before {
-  content: "\e90b";
-}
-.icon-meli-chibi:before {
-  content: "\e90c";
-}
-.icon-michi:before {
-  content: "\e90d";
-}
-.icon-Rayas:before {
-  content: "\e90e";
-}
-.icon-X:before {
-  content: "\e90f";
-}
-.icon-uniE910:before {
-  content: "\e910";
-}
-.icon-Puntos:before {
-  content: "\e911";
-}
+.icon-meli-icono:before { content: "\e900"; color: var(--color-negro-oscuro); }
+.icon-Meli:before { content: "\e901"; color: #5e5e5e; }
+.icon-Ambar:before { content: "\e902"; }
+.icon-Melody:before { content: "\e903"; color: #5e5e5e; }
+.icon-Melissa:before { content: "\e904"; }
+.icon-Nelle:before { content: "\e905"; color: #5e5e5e; }
+.icon-calculadora:before { content: "\e906"; }
+.icon-icono-snake:before { content: "\e907"; }
+.icon-album:before { content: "\e908"; }
+.icon-dino:before { content: "\e909"; }
+.icon-gato:before { content: "\e90a"; }
+.icon-icono-ia:before { content: "\e90b"; }
+.icon-meli-chibi:before { content: "\e90c"; }
+.icon-michi:before { content: "\e90d"; }
+.icon-Rayas:before { content: "\e90e"; }
+.icon-X:before { content: "\e90f"; }
+.icon-uniE910:before { content: "\e910"; }
+.icon-Puntos:before { content: "\e911"; }
 
 body {
     font-family: Arial, sans-serif;
@@ -116,9 +76,9 @@ body {
     padding: 0;
     overflow-x: hidden;
     user-select: none;
--webkit-user-select: none;
--ms-user-select: none;
--webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .back-button {
@@ -158,9 +118,47 @@ body {
 }
 
 .menu-icon {
-    font-size: 28px; 
     cursor: pointer;
-    margin-right: 15px; 
+    width: 30px;
+    height: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.menu-icon svg {
+    width: 32px;
+    height: 32px;
+    transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-icon .line {
+    fill: none;
+    stroke: white;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3;
+    transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1), stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-icon .line-top-bottom {
+    stroke-dasharray: 12 63;
+}
+
+.menu-icon.open svg {
+    transform: rotate(-45deg);
+}
+
+.menu-icon.open .line-top-bottom {
+    stroke-dasharray: 20 300;
+    stroke-dashoffset: -32.42;
+}
+
+.menu-icon.open .line:not(.line-top-bottom) {
+    stroke-dasharray: 1 300;
+    stroke-dashoffset: -18;
 }
 
 .app-icon-header-custom {
@@ -170,14 +168,14 @@ body {
     color: var(--color-negro-oscuro);
 }
 
-.icono-buton-Gatosauriocrack {
+.icono-buton-Bikot {
     font-size: 2.5em;
     margin-right: 10px;
     line-height: 1;
     color: var(--color-negro-oscuro);
 }
 
-.buton-Gatosauriocrack {
+.buton-Bikot {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -212,13 +210,39 @@ body {
 }
 
 .app-title-superposition {
-    font-size: 1.5em; 
-    font-weight: bold;
-    color: var(--color-texto);
-    line-height: 1; 
-    margin-left: 10px;
-    white-space: nowrap;
+    /* Fuentes recomendadas de corte moderno/geométrico como alternativas o complemento a Bikot */
+    font-family: 'Bikot', 'Montserrat', 'Syne', 'Outfit', sans-serif;
+    
+    /* Un grosor imponente pero estilizado */
+    font-weight: 800; 
+    
+    /* Tamaño responsivo usando clamp para que se adapte a móviles y pantallas grandes sin romperse */
+    font-size: clamp(2rem, 5vw, 3.5rem); 
+    
+    /* Un tracking ligeramente despegado aporta un aire premium y de diseño editorial */
+    letter-spacing: -0.02em; 
+    
+    /* Altura de línea ajustada para evitar separaciones excesivas si el título se divide en dos renglones */
+    line-line-height: 1.1; 
+    
+    /* Degradado sutil para darle volumen moderno (usa tus variables de color naranja) */
+    background: linear-gradient(135deg, var(--color-texto) 30%, var(--color-naranja-claro) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Sombra difuminada muy suave para despegar el título del fondo oscuro sin ensuciar el diseño */
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    
+    /* Evita cortes raros y asegura transiciones suaves si cambia de estado */
+    white-space: normal; 
+    transition: transform 0.3s ease;
 }
+
+/* Efecto sutil al pasar el mouse para interactividad moderna */
+.app-title-superposition:hover {
+    transform: scale(1.02);
+}
+
 
 .app-title-container {
     display: flex;
@@ -226,16 +250,16 @@ body {
 }
 
 .sidebar {
-    height: 100%;
+    height: calc(100% - 60px);
     width: 0;
     position: fixed;
     z-index: 999;
-    top: 0;
+    top: 60px;
     left: 0;
     background-color: var(--color-fondo-claro-menu);
     overflow-x: hidden;
     transition: width 0.5s;
-    padding-top: 60px;
+    padding-top: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.5);
     max-width: 250px;
 }
@@ -685,6 +709,7 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     transition: transform 0.2s;
     cursor: pointer;
+    display: none !important;
 }
 
 .content-card:hover {
@@ -1052,10 +1077,10 @@ input[type="file"] {
 .canales-card {
     width: 100%;
     max-width: 450px;
-    background-color: var(--color-fondo-claro-menu);
+    background-color: transparent !important;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: none !important;
     text-align: center;
 }
 
@@ -1203,7 +1228,6 @@ input[type="file"] {
     display: block;
 }
 
-/* --- MODIFICACIÓN DEL MARCO DEL GIF --- */
 #meliGifContainer {
     position: fixed;
     bottom: 20px;
@@ -1213,24 +1237,23 @@ input[type="file"] {
     cursor: pointer;
     padding: 0;
     margin: 0;
-    background-color: transparent; /* Fondo eliminado */
-    border: none;                  /* Borde naranja eliminado */
-    box-shadow: none;              /* Sombra eliminada */
-    overflow: visible;             /* Para que no corte el gif */
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
 }
 
 #meliGif {
     width: 80px;
     height: auto;
-    border-radius: 0;              /* Sin redondeo de marco */
-    box-shadow: none;              /* Sin sombra en la imagen */
+    border-radius: 0;
+    box-shadow: none;
     background: transparent;
 }
 
 #meliTimer, #meliGifContainer > #localClock {
-    display: none !important;      /* Oculta el temporizador y reloj extra */
+    display: none !important;
 }
-/* -------------------------------------- */
 
 @media (max-width: 600px) {
     #meliGifInline {
@@ -1334,10 +1357,6 @@ input[type="file"] {
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
-.header-bar {
-    position: relative;
-    z-index: 100;
-}
 .apoyo-contenedor-full {
     width: 100%;
     max-width: none;
@@ -1380,7 +1399,6 @@ input[type="file"] {
     margin-right: 10px;
 }
 
-
 .app-list-download .app-item-download:nth-child(1) .app-name-icon i.fas.fa-snake:before {
     content: "\e907";
     font-family: 'FontAwesome-Gatosauriocrack' !important;
@@ -1392,6 +1410,7 @@ input[type="file"] {
 .app-icon-custom.icon-meli-icono:before {
     font-size: 80px !important;
 }
+
 .eula-link {
     color: var(--color-azul-principal);
     text-decoration: none;
@@ -1404,13 +1423,38 @@ input[type="file"] {
     text-decoration: underline;
 }
 
-.sidebar [class*="icon-"]:before,
-.sidebar [class^="icon-"]:before,
-.sidebar .icon-meli-icono:before {
-    content: none !important; 
-    font-size: 0 !important; 
-    width: 0 !important;
-    margin-right: 0 !important;
+.hamburger {
+  cursor: pointer;
 }
 
+.hamburger input {
+  display: none;
+}
 
+.hamburger svg {
+  height: 2em;
+  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line {
+  fill: none;
+  stroke: white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+              stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line-top-bottom {
+  stroke-dasharray: 12 63;
+}
+
+.hamburger input:checked + svg {
+  transform: rotate(-45deg);
+}
+
+.hamburger input:checked + svg .line-top-bottom {
+  stroke-dasharray: 20 300;
+  stroke-dashoffset: -32.42;
+}

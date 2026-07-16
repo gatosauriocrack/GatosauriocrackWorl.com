@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-    <title>Gatosauriocrack - Contenido web</title>
-
-    <meta property="og:title" content="Gatosauriocrack - Juegos, Apps y Contenido Digital">
-    <meta property="og:description" content="Bienvenido a la web de Gatosauriocrack. Encuentra enlaces de descarga de Apps (APK), juegos beta en línea, contenido de YouTube y enlaces a redes sociales.">
+    <title>Bikot - Contenido web</title>
+    <meta property="og:title" content="Bikot - Juegos, Apps y Contenido Digital">
+    <meta property="og:description" content="Bienvenido a la web de Bikot. Encuentra enlaces de descarga de Apps (APK), juegos beta en línea, contenido de YouTube y enlaces a redes sociales.">
     <meta property="og:image" content="https://Gatosauriocrackworl.com/Web/Gatoworl.png">
     <meta property="og:url" content="https://Gatosauriocrackworl.com/Web/">
     <meta property="og:type" content="website">
-
     <link rel="icon" type="image/png" href="Gatoworl.png" sizes="48x48">
     <link rel="icon" type="image/png" href="Gatoworl.png" sizes="96x96">
     <link rel="icon" type="image/png" href="Gatoworl.png" sizes="144x144">
-    
     <link rel="apple-touch-icon" href="Gatoworl.png">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css"> 
 </head>
-
 <body>
     <div class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i></div>
     <div id="menuOverlay" onclick="closeMenu()"></div>
     
 <header class="header-bar">
     <div class="header-content">
-        <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
+        <label class="hamburger">
+            <input type="checkbox" id="sidebarCheckbox" onchange="if(this.checked) { toggleMenu(); } else { closeMenu(); }">
+            <svg viewBox="0 0 32 32">
+                <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                <path class="line" d="M7 16 27 16"></path>
+            </svg>
+        </label>
         <div class="app-title-container">
             <i class="icon-meli-icono app-icon-header-custom icon-color-negro-oscuro"></i> 
-            
-            <i class="icon-Gatosauriocrack app-icon-superposition icon-color-negro"></i>
-            <span class="app-title-superposition">Gatosauriocrack</span>
+            <i class="icon-Bikot app-icon-superposition icon-color-negro"></i>
+            <span class="app-title-superposition">Bikot‎‎ ‎ </span>
         </div>
     </div>
 </header>
@@ -42,7 +42,6 @@
     </div>
     
     <div id="mySidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeMenu()">&times;</a> 
         <div id="sidebarProfileSection" class="sidebar-profile-login" onclick="showScreen('info-screen')">
             <div id="profilePhotoContainer" class="profile-photo-container">
                 <i id="profileIcon" class="icon-meli-icono default-profile-icon" style="font-size: 50px;"></i>
@@ -57,7 +56,7 @@
         <a href="javascript:void(0)" onclick="showScreen('apoyo-screen')"><span class="icon"><i class="fas fa-handshake"></i></span> Apoyo</a>
         <a href="javascript:void(0)" onclick="showScreen('extra-screen')"><span class="icon"><i class="fas fa-star"></i></span> Extras</a>
         <a href="javascript:void(0)" onclick="showScreen('info-screen')"><span class="icon"><i class="fas fa-info-circle"></i></span> Información web</a> 
-        </div>
+    </div>
     <div id="home-screen" class="main-content active">
         <div class="welcome-section">
             <h1 class="welcome-title">¡Bienvenido!</h1>
@@ -97,8 +96,7 @@
         <div class="contact-card">
             <h2 style="color: var(--color-naranja-principal);"><i class="fas fa-envelope"></i> Contactar</h2>
             <div class="email-list">
-                <a href="mailto:gatosauriocrackworl@gmail.com" class="email-link"><i class="fas fa-envelope-open-text"></i> gatosauriocrackworl@gmail.com</a>
-                <a href="mailto:gatosauriocrackgames@gmail.com" class="email-link"><i class="fas fa-envelope-open-text"></i> gatosauriocrackgamed@gmail.com</a>
+                <a href="mailto:bikot.worl@gmail.com" class="email-link"><i class="fas fa-envelope-open-text"></i>Bikot.Worl@gmail.com</a>
             </div>
             <p class="contact-note">Al hacer clic se abrirá tu aplicación de correo predeterminada.</p>
         </div>
@@ -149,7 +147,6 @@
                     </button>
                 </div>
             </div>
-        
             <div class="game-item-container" id="aleatory-container">
                 <div class="game-item">
                     <button class="game-button" onclick="toggleGameOptions('aleatory')">
@@ -251,7 +248,7 @@
                 <a href="https://www.tiktok.com/@gatosauriocrack?_r=1&_t=ZS-91VAbcZUul5" target="_blank" class="red-link">
                     <i class="fab fa-tiktok social-icon tiktok"></i> TikTok
                 </a>
-                </div>
+            </div>
         </div>
     </div>
     <div id="apoyo-screen" class="main-content">
@@ -265,24 +262,23 @@
             ></iframe>
         </div>
     </div>
-    </div> <div id="extra-screen" class="main-content">
+    <div id="extra-screen" class="main-content">
         <h2 style="color: var(--color-naranja-principal);"><i class="fas fa-star"></i> Extras</h2>
         <div class="welcome-section" style="max-width: 600px;">
             <p>¡Bienvenido a la sección de extras!</p>
             <p> Hola para ver mis suscripciones o productos Dijitales/Físicos puede puede visitar este sitio:</p>
-            <a href="https://Gatosauriocrackworl.com/Ventas/" target="_blank" class="buton-Gatosauriocrack">
-            <i class="icon-meli-icono icono-buton-Gatosauriocrack"></i>Gatosauriocrack</a>
+            <a href="https://Gatosauriocrackworl.com/Ventas/" target="_blank" class="buton-Bikot">
+            <i class="icon-meli-icono icono-buton-Bikot"></i>Bikot</a>
             <p> Puedes también probar una calculadora científica que tiene diversos conversores que están en desarrollo y actualmente se encuentra un 3 en raya para matar el tiempo jugando con amigos y una bóveda secreta de archivos indetectable ya que no se almacenan en tu dispositivo y puede exportar la bóveda para usarlo en otro dispositivo [ Se activa en la calculadora normal poniendo " ...- " ]  también tendrá un apartado de librería con varios archivos PDF informativos de matemáticas.</p>
-            <a href="https://Gatosauriocrackworl.com/Calculadora/" target="_blank" class="buton-Gatosauriocrack">
-            <i class="icon-calculadora icono-buton-Gatosauriocrack"></i>Calculadora</a>
+            <a href="https://Gatosauriocrackworl.com/Calculadora/" target="_blank" class="buton-Bikot">
+            <i class="icon-calculadora icono-buton-Bikot"></i>Calculadora</a>
             <p>También puedes mandar sugerencias de juegos quieres que haga al correo como título "Sugerencia de juego" ↓.</p>
-            <a href="mailto:gatosauriocrackgames@gmail.com" class="buton-Gatosauriocrack" class="buton-Gatosauriocrack">
-            <i class="icon-meli-icono icono-buton-Gatosauriocrack"></i></a>
+            <a href="mailto:Bikotgames@gmail.com" class="buton-Bikot" class="buton-Bikot">
+            <i class="icon-meli-icono icono-buton-Bikot"></i></a>
             <p>Aquí puede ver el <span class="texto-azul">Acuerdo de licencia de usuario final (EULA) y términos de uso</span>.  ↓</p>
-            <a href="https://Gatosauriocrackworl.com/Web/©" target="_blank" class="buton-Gatosauriocrack">
-            <i class="icon-meli-icono icono-buton-Gatosauriocrack"></i>EULA</a>
-        </a>
-            </div>
+            <a href="https://Gatosauriocrackworl.com/Web/©" target="_blank" class="buton-Bikot">
+            <i class="icon-meli-icono icono-buton-Bikot"></i>EULA</a>
+        </div>
     </div>
 
     <div id="rickrollModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999;">
@@ -332,7 +328,6 @@
             <p>Ya está disponible en la vercion en línea (Web) y la vercion en apk.</p>
         </div>
     </div>
-    
     <div id="aleatoryModal" class="modal-overlay game-modal" style="display: none;" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content-game" onclick="event.stopPropagation()">
             <span class="close-game-modal" onclick="closeModal('aleatoryModal')">&times;</span>
@@ -350,9 +345,7 @@
             </ul>
         </div>
     </div>
-    
     <script src="script.js"></script>
-    
     <script>
         const GIF_DURATION = 120;
         const MELI_GIF_CONTAINER = document.getElementById('meliGifContainer');
@@ -365,20 +358,16 @@
         const REWARD_CONTAINER = document.getElementById('rewardContainer');
         let intervalTimer;
         let gifTimeout;
-
         function toggleGameOptions(gameId) {
             const options = document.getElementById(gameId + '-options');
             options.classList.toggle('show');
         }
-
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'flex';
         }
-
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
-
         function closeModalOnOutsideClick(event) {
             if (event.target.classList.contains('modal-overlay')) {
                 event.target.style.display = 'none';
@@ -390,19 +379,14 @@
                 }
             }
         }
-
         function updateMeliTimer() {
             const now = new Date();
             const minutes = now.getMinutes();
             const seconds = now.getSeconds();
-            
             const isGifWindow = (minutes % 20) === 0 && seconds < GIF_DURATION;
-
             if (isGifWindow) {
                 MELI_GIF_CONTAINER.style.display = 'block'; 
-                
                 const remainingGifTime = GIF_DURATION - seconds;
-                
                 if (!gifTimeout) {
                     gifTimeout = setTimeout(() => {
                         MELI_GIF_CONTAINER.style.display = 'none';
@@ -415,24 +399,19 @@
                 clearTimeout(gifTimeout);
                 gifTimeout = null;
             }
-            
             if (MELI_TIMER_DISPLAY) {
                 MELI_TIMER_DISPLAY.style.display = 'none';
             }
         }
-
         function startMeliReward() {
             MELI_GIF_CONTAINER.style.display = 'none';
             REWARD_CONTAINER.style.display = 'none';
             REDEEM_TEXT.style.display = 'block';
             RICKROLL_MODAL.style.display = 'flex';
             RICKROLL_VIDEO.style.display = 'none'; 
-            
             clearInterval(intervalTimer); 
-            
             let count = 3;
             REDEEM_COUNTDOWN.textContent = count;
-            
             const countdownInterval = setInterval(() => {
                 count--;
                 REDEEM_COUNTDOWN.textContent = count;
@@ -442,30 +421,25 @@
                 }
             }, 1000);
         }
-
         function playRickrollVideo() {
             REDEEM_TEXT.style.display = 'none';
             RICKROLL_VIDEO.style.display = 'block';
             RICKROLL_VIDEO.controls = false; 
             RICKROLL_VIDEO.onended = showRewardCode;
-            
             RICKROLL_VIDEO.load();
             RICKROLL_VIDEO.play().catch(error => {
                 console.error("Error al reproducir el video:", error);
                 RICKROLL_VIDEO.controls = true; 
             });
         }
-
         function showRewardCode() {
             RICKROLL_VIDEO.style.display = 'none';
             REWARD_CONTAINER.style.display = 'block';
-            
             setTimeout(() => {
                 RICKROLL_MODAL.style.display = 'none';
                 startMeliTimerLogic(); 
             }, 10000);
         }
-
         function copyCode(code) {
              navigator.clipboard.writeText(code).then(() => {
                 alert('¡Código copiado al portapapeles: ' + code + '!');
@@ -473,14 +447,11 @@
                 console.error('Error al copiar el código: ', err);
             });
         }
-
         function startMeliTimerLogic() {
             updateMeliTimer();
             intervalTimer = setInterval(updateMeliTimer, 1000);
         }
-
         document.addEventListener('DOMContentLoaded', startMeliTimerLogic);
-        
         window.copyCode = copyCode; 
         window.startMeliReward = startMeliReward; 
         window.toggleGameOptions = toggleGameOptions;
@@ -490,4 +461,3 @@
     </script>
 </body>
 </html>
-
