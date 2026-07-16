@@ -210,35 +210,20 @@ body {
 }
 
 .app-title-superposition {
-    /* Fuentes recomendadas de corte moderno/geométrico como alternativas o complemento a Bikot */
     font-family: 'Bikot', 'Montserrat', 'Syne', 'Outfit', sans-serif;
-    
-    /* Un grosor imponente pero estilizado */
     font-weight: 800; 
-    
-    /* Tamaño responsivo usando clamp para que se adapte a móviles y pantallas grandes sin romperse */
+    font-style: italic;
     font-size: clamp(2rem, 5vw, 3.5rem); 
-    
-    /* Un tracking ligeramente despegado aporta un aire premium y de diseño editorial */
     letter-spacing: -0.02em; 
-    
-    /* Altura de línea ajustada para evitar separaciones excesivas si el título se divide en dos renglones */
-    line-line-height: 1.1; 
-    
-    /* Degradado sutil para darle volumen moderno (usa tus variables de color naranja) */
+    line-height: 1.1; 
     background: linear-gradient(135deg, var(--color-texto) 30%, var(--color-naranja-claro) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    
-    /* Sombra difuminada muy suave para despegar el título del fondo oscuro sin ensuciar el diseño */
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    
-    /* Evita cortes raros y asegura transiciones suaves si cambia de estado */
     white-space: normal; 
     transition: transform 0.3s ease;
 }
 
-/* Efecto sutil al pasar el mouse para interactividad moderna */
 .app-title-superposition:hover {
     transform: scale(1.02);
 }
@@ -350,11 +335,18 @@ body {
     padding-right: 20px;
     width: 100%;
     min-height: calc(100vh - 65px);
-    transition: margin-left 0.5s;
     box-sizing: border-box;
     display: none;
     flex-direction: column;
     align-items: center;
+    transition: margin-left 0.5s ease, width 0.5s ease; 
+}
+
+@media (min-width: 900px) {
+    .sidebar.open ~ .main-content {
+        margin-left: 250px;
+        width: calc(100% - 250px);
+    }
 }
 
 .main-content.active {
@@ -1458,3 +1450,10 @@ input[type="file"] {
   stroke-dasharray: 20 300;
   stroke-dashoffset: -32.42;
 }
+
+@media (min-width: 900px) {
+    .bloque-indice-pc {
+        display: none;
+    }
+}
+

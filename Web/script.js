@@ -228,6 +228,7 @@ window.addEventListener('resize', () => {
      }
 });
 
+
 window.addEventListener('popstate', () => {
     if (currentScreen !== 'home-screen') {
         goBack();
