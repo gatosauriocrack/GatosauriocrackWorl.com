@@ -228,7 +228,6 @@ body {
     transform: scale(1.02);
 }
 
-
 .app-title-container {
     display: flex;
     align-items: center; 
@@ -1202,141 +1201,6 @@ input[type="file"] {
     text-align: center;
 }
 
-#meliGifInlineContainer {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-    height: 2em;
-}
-
-#meliGifInline {
-    height: 1.5em;
-    width: auto;
-    border: none;
-    border-radius: 0;
-    background-color: transparent;
-    cursor: pointer;
-    line-height: 1;
-    display: block;
-}
-
-#meliGifContainer {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1050;
-    display: none;
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-    overflow: visible;
-}
-
-#meliGif {
-    width: 80px;
-    height: auto;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
-}
-
-#meliTimer, #meliGifContainer > #localClock {
-    display: none !important;
-}
-
-@media (max-width: 600px) {
-    #meliGifInline {
-        height: 1.2em;
-    }
-    #meliGifInlineContainer {
-        height: 1.5em;
-    }
-}
-
-#rickrollModal .modal-content {
-    background-color: #000;
-    padding: 0;
-    max-width: 600px;
-    width: 95%;
-    height: auto;
-    border: 5px solid var(--color-naranja-principal);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-#rickrollVideo {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    display: none;
-}
-
-#redeemText {
-    text-align: center;
-    padding: 40px 20px;
-    color: white;
-    font-size: 1.5em;
-    display: none;
-}
-
-#redeemCountdown {
-    font-size: 4em;
-    color: var(--color-naranja-claro);
-    display: block;
-    margin-top: 10px;
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
-}
-
-#rewardContainer {
-    padding: 20px;
-    text-align: center;
-    display: none;
-}
-
-#rewardContainer h3 {
-    color: var(--color-success-bg);
-    margin-bottom: 10px;
-    font-size: 1.5em;
-}
-
-#rewardCode {
-    background-color: #444;
-    padding: 15px;
-    border-radius: 5px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: var(--color-naranja-claro);
-    display: inline-block;
-    margin-bottom: 15px;
-    border: 1px dashed #666;
-    word-break: break-all;
-}
-
-.copy-button {
-    background-color: var(--color-azul-principal);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-
-.copy-button:hover {
-    background-color: #1664cc;
-}
-
 #localClock {
     position: absolute;
     right: 10px;
@@ -1456,4 +1320,3 @@ input[type="file"] {
         display: none;
     }
 }
-

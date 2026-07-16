@@ -37,10 +37,6 @@
     </div>
 </header>
     
-    <div id="meliGifContainer"> 
-        <span id="meliTimer" style="display:none;"></span> <img id="meliGif" src="Meli.gif" alt="Meli GIF" onclick="startMeliReward()">
-    </div>
-    
     <div id="mySidebar" class="sidebar">
         <div id="sidebarProfileSection" class="sidebar-profile-login" onclick="showScreen('info-screen')">
             <div id="profilePhotoContainer" class="profile-photo-container">
@@ -277,22 +273,6 @@
         </div>
     </div>
 
-    <div id="rickrollModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999;">
-        <div id="rickrollContent" style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-            <p id="redeemText" style="color: white; font-size: 20px; margin-bottom: 20px;">Canjeando recompensa en <span id="redeemCountdown">3</span>...</p>
-            <video id="rickrollVideo" src="rikroll.mp4" playsinline style="width: 100%; height: auto; max-width: 800px; display: none;" preload="auto">
-                Tu navegador no soporta el elemento de video.
-            </video>
-            <div id="rewardContainer" style="display: none; margin-top: 20px;">
-                <h3 style="color: white; margin-bottom: 10px;">¡Recompensa Canjeada!</h3>
-                <div class="code-box" onclick="copyCode('M3L1 S3CR370')" style="background: #333; padding: 10px; border-radius: 5px; cursor: pointer;">
-                    <code id="rewardCode" style="color: #6AA84F; font-size: 18px; user-select: none;">M3L1 S3CR370</code>
-                    <i class="fas fa-copy" style="color: #ccc; margin-left: 10px;"></i>
-                </div>
-                <p style="color: #ccc; font-size: 12px; margin-top: 5px;">Haz clic para copiar el código.</p>
-            </div>
-        </div>
-    </div>
     <div id="snakeModal" class="modal-overlay game-modal" style="display: none;" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content-game" onclick="event.stopPropagation()">
             <span class="close-game-modal" onclick="closeModal('snakeModal')">&times;</span>
@@ -343,17 +323,6 @@
     </div>
     <script src="script.js"></script>
     <script>
-        const GIF_DURATION = 120;
-        const MELI_GIF_CONTAINER = document.getElementById('meliGifContainer');
-        const MELI_GIF_IMG = document.getElementById('meliGif');
-        const MELI_TIMER_DISPLAY = document.getElementById('meliTimer');
-        const RICKROLL_MODAL = document.getElementById('rickrollModal');
-        const RICKROLL_VIDEO = document.getElementById('rickrollVideo');
-        const REDEEM_TEXT = document.getElementById('redeemText');
-        const REDEEM_COUNTDOWN = document.getElementById('redeemCountdown');
-        const REWARD_CONTAINER = document.getElementById('rewardContainer');
-        let intervalTimer;
-        let gifTimeout;
         function toggleGameOptions(gameId) {
             const options = document.getElementById(gameId + '-options');
             options.classList.toggle('show');
@@ -367,89 +336,8 @@
         function closeModalOnOutsideClick(event) {
             if (event.target.classList.contains('modal-overlay')) {
                 event.target.style.display = 'none';
-                if (event.target.id === 'rickrollModal') {
-                    if (RICKROLL_VIDEO && !RICKROLL_VIDEO.paused) {
-                        RICKROLL_VIDEO.pause();
-                    }
-                    startMeliTimerLogic();
-                }
             }
         }
-        function updateMeliTimer() {
-            const now = new Date();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-            const isGifWindow = (minutes % 20) === 0 && seconds < GIF_DURATION;
-            if (isGifWindow) {
-                MELI_GIF_CONTAINER.style.display = 'block'; 
-                const remainingGifTime = GIF_DURATION - seconds;
-                if (!gifTimeout) {
-                    gifTimeout = setTimeout(() => {
-                        MELI_GIF_CONTAINER.style.display = 'none';
-                        gifTimeout = null;
-                        updateMeliTimer(); 
-                    }, (remainingGifTime) * 1000);
-                }
-            } else {
-                MELI_GIF_CONTAINER.style.display = 'none'; 
-                clearTimeout(gifTimeout);
-                gifTimeout = null;
-            }
-            if (MELI_TIMER_DISPLAY) {
-                MELI_TIMER_DISPLAY.style.display = 'none';
-            }
-        }
-        function startMeliReward() {
-            MELI_GIF_CONTAINER.style.display = 'none';
-            REWARD_CONTAINER.style.display = 'none';
-            REDEEM_TEXT.style.display = 'block';
-            RICKROLL_MODAL.style.display = 'flex';
-            RICKROLL_VIDEO.style.display = 'none'; 
-            clearInterval(intervalTimer); 
-            let count = 3;
-            REDEEM_COUNTDOWN.textContent = count;
-            const countdownInterval = setInterval(() => {
-                count--;
-                REDEEM_COUNTDOWN.textContent = count;
-                if (count <= 0) {
-                    clearInterval(countdownInterval);
-                    playRickrollVideo();
-                }
-            }, 1000);
-        }
-        function playRickrollVideo() {
-            REDEEM_TEXT.style.display = 'none';
-            RICKROLL_VIDEO.style.display = 'block';
-            RICKROLL_VIDEO.controls = false; 
-            RICKROLL_VIDEO.onended = showRewardCode;
-            RICKROLL_VIDEO.load();
-            RICKROLL_VIDEO.play().catch(error => {
-                console.error("Error al reproducir el video:", error);
-                RICKROLL_VIDEO.controls = true; 
-            });
-        }
-        function showRewardCode() {
-            RICKROLL_VIDEO.style.display = 'none';
-            REWARD_CONTAINER.style.display = 'block';
-            setTimeout(() => {
-                RICKROLL_MODAL.style.display = 'none';
-                startMeliTimerLogic(); 
-            }, 10000);
-        }
-        function copyCode(code) {
-             navigator.clipboard.writeText(code).then(() => {
-                alert('¡Código copiado al portapapeles: ' + code + '!');
-            }).catch(err => {
-                console.error('Error al copiar el código: ', err);
-            });
-        }
-        function startMeliTimerLogic() {
-            updateMeliTimer();
-            intervalTimer = setInterval(updateMeliTimer, 1000);
-        }
-        document.addEventListener('DOMContentLoaded', startMeliTimerLogic);
-        window.copyCode = copyCode; 
-        window.startMeliReward = startMeliReward; 
         window.toggleGameOptions = toggleGameOptions;
         window.openModal = openModal;
         window.closeModal = closeModal;
