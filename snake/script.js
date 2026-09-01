@@ -171,8 +171,8 @@ async function sendRecordToServer(score, speed) {
 }
 
 const canvas = document.getElementById('gameCanvas');
-canvas.width = 375; 
-canvas.height = 375; 
+canvas.width = 500; 
+canvas.height = 500; 
 const ctx = canvas.getContext('2d');
 const scoreElement = document.getElementById('score');
 const highScoreElement = document.getElementById('highScore');
