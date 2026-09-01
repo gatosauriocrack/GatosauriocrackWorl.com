@@ -494,6 +494,39 @@ function gameOver() {
     gameOverModal.style.display = 'flex';
 }
 
+function setupResponsiveControls() {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window);
+    const controlsContainer = document.querySelector('.controls-container') || document.querySelector('.controls') || document.getElementById('controls');
+    let pcControlsFooter = document.getElementById('pcControlsFooter');
+
+    if (!isMobile) {
+        if (controlsContainer) {
+            controlsContainer.style.display = 'none';
+        }
+        if (!pcControlsFooter) {
+            pcControlsFooter = document.createElement('div');
+            pcControlsFooter.id = 'pcControlsFooter';
+            pcControlsFooter.style.textAlign = 'center';
+            pcControlsFooter.style.marginTop = '15px';
+            pcControlsFooter.style.fontSize = '14px';
+            pcControlsFooter.style.color = '#ffffff';
+            pcControlsFooter.style.fontWeight = 'bold';
+            
+            const gameContainer = canvas.parentElement;
+            gameContainer.appendChild(pcControlsFooter);
+        }
+        pcControlsFooter.innerHTML = 'Controles en PC: Movimiento (Flechas / WASD) | Pausa (Espacio / P / Esc) | Salir al Menú (Enter en Pausa)';
+        pcControlsFooter.style.display = 'block';
+    } else {
+        if (controlsContainer) {
+            controlsContainer.style.display = '';
+        }
+        if (pcControlsFooter) {
+            pcControlsFooter.style.display = 'none';
+        }
+    }
+}
+
 document.addEventListener('keydown', (event) => {
     const keyMap = {
         'ArrowUp': 'ArrowUp',
@@ -525,6 +558,14 @@ document.addEventListener('keydown', (event) => {
             changeDirection(mappedKey);
         } else if (!gameRunning && isStartVisible) {
             showCountdown(100, 'Normal (Medio)'); 
+        }
+    } else if (event.key === ' ' || event.key === 'Spacebar') {
+        event.preventDefault();
+        togglePause();
+    } else if (event.key === 'Enter') {
+        if (gameRunning && gamePaused) {
+            event.preventDefault();
+            exitGame();
         }
     } else if (event.key === 'p' || event.key === 'P' || (event.key === 'Escape' && !isInfoVisible)) {
         togglePause();
@@ -573,7 +614,10 @@ document.getElementById('btnClasificatoria').addEventListener('click', () => {
 btnInformacion.addEventListener('click', openInfoModal);
 closeInfoBtn.addEventListener('click', closeInfoModal);
 
+window.addEventListener('resize', setupResponsiveControls);
+
 window.onload = () => {
     loadHighScore();
     drawGame(); 
+    setupResponsiveControls();
 };
