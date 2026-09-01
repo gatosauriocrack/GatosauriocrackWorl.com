@@ -398,7 +398,11 @@ function changeDirection(key) {
 }
 
 function togglePause() {
-    if (!gameRunning || gameOverModal.style.display === 'flex' || startModal.style.display === 'flex' || infoModal.style.display === 'flex') {
+    const isInfoVisible = getComputedStyle(infoModal).display !== 'none';
+    const isStartVisible = getComputedStyle(startModal).display !== 'none';
+    const isGameOverVisible = getComputedStyle(gameOverModal).display !== 'none';
+
+    if (!gameRunning || isGameOverVisible || isStartVisible || isInfoVisible) {
         return; 
     }
     gamePaused = !gamePaused;
@@ -505,19 +509,24 @@ document.addEventListener('keydown', (event) => {
         'd': 'ArrowRight',
         'D': 'ArrowRight'
     };
+
     const mappedKey = keyMap[event.key];
-    if (infoModal.style.display === 'flex' && event.key === 'Escape') {
+    const isInfoVisible = getComputedStyle(infoModal).display !== 'none';
+    const isStartVisible = getComputedStyle(startModal).display !== 'none';
+
+    if (isInfoVisible && event.key === 'Escape') {
         closeInfoModal();
         return;
     }
+
     if (mappedKey) {
         event.preventDefault(); 
-        if (gameRunning && !gamePaused && infoModal.style.display !== 'flex') {
+        if (gameRunning && !gamePaused && !isInfoVisible) {
             changeDirection(mappedKey);
-        } else if (!gameRunning && startModal.style.display === 'flex') {
+        } else if (!gameRunning && isStartVisible) {
             showCountdown(100, 'Normal (Medio)'); 
         }
-    } else if (event.key === 'p' || event.key === 'P' || (event.key === 'Escape' && infoModal.style.display !== 'flex')) {
+    } else if (event.key === 'p' || event.key === 'P' || (event.key === 'Escape' && !isInfoVisible)) {
         togglePause();
     }
 });
@@ -526,9 +535,12 @@ document.querySelectorAll('.control-btn').forEach(button => {
     const direction = button.getAttribute('data-direction');
     const handleInput = (event) => {
         event.preventDefault(); 
-        if (gameRunning && !gamePaused && infoModal.style.display !== 'flex') {
+        const isInfoVisible = getComputedStyle(infoModal).display !== 'none';
+        const isStartVisible = getComputedStyle(startModal).display !== 'none';
+
+        if (gameRunning && !gamePaused && !isInfoVisible) {
             changeDirection(direction);
-        } else if (!gameRunning && startModal.style.display === 'flex') {
+        } else if (!gameRunning && isStartVisible) {
             showCountdown(100, 'Normal (Medio)');
         }
     };
